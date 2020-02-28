@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.islizx.mapper.TypeMapper">
+    <resultMap id="BaseResultMap" type="com.islizx.entity.Type">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="icon" property="icon" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="tb">t_type</sql>
+
+    <sql id="Base_Column_List">
+    id, name, description, icon
+  </sql>
+
+
+    <insert id="insert" parameterType="com.islizx.entity.Type" useGeneratedKeys="true" keyProperty="id">
+        insert into
+        <include refid="tb"/>
+        (name,description,icon)
+        values (#{name,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{icon,jdbcType=VARCHAR})
+    </insert>
+
+
+    <update id="update" parameterType="com.islizx.entity.Type">
+        update
+        <include refid="tb"/>
+        <set>
+            <if test="id != null">id = #{id,jdbcType=INTEGER},</if>
+            <if test="name != null">name = #{name,jdbcType=VARCHAR},</if>
+            <if test="description != null">description = #{description,jdbcType=VARCHAR},</if>
+            <if test="icon != null">icon = #{icon,jdbcType=VARCHAR},</if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+
+    <!--获得分类总数-->
+    <select id="countType" resultType="Integer">
+        SELECT COUNT(*) FROM
+        <include refid="tb"/>
+    </select>
+
+
+    <select id="listType" resultType="com.islizx.entity.Type">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+        order by id asc
+    </select>
+
+    <select id="getTypeById" parameterType="Integer" resultType="com.islizx.entity.Type">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+        WHERE
+        t_type.id=#{value}
+    </select>
+
+
+    <!--删除分类-->
+    <delete id="deleteType" parameterType="Integer">
+        DELETE FROM
+        <include refid="tb"/>
+        WHERE id=#{value}
+    </delete>
+
+
+    <!--根据分类名查找分类-->
+    <select id="getTypeByName" parameterType="String" resultType="com.islizx.entity.Type">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+        WHERE name=#{value}
+        limit 1
+    </select>
+
+
+    <!--获取该分类下所有文章总数-->
+    <select id="getBlogCountWithTypeId" parameterType="Integer" resultType="Integer">
+        SELECT COUNT(*) FROM
+        t_blog
+        WHERE t_blog.type_id = #{id}
+    </select>
+
+    <!--获取该分类下所有文章总数-->
+    <select id="getBlogCountWithTypeIdAtHome" parameterType="Integer" resultType="Integer">
+        SELECT COUNT(*) FROM
+        t_blog
+        WHERE t_blog.type_id = #{id} AND published = 0 AND posttype = 0
+    </select>
+
+</mapper>

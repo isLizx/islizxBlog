@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="cn" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="home/_fragments :: head(~{::title})">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>分类 | isLizx</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
+  <link rel="stylesheet" href="../static/css/me.css">
+</head>
+<body>
+
+  <!--导航-->
+  <nav  th:replace="home/_fragments :: menu(2)" class="ui inverted attached segment m-padded-tb-mini m-shadow-small" ></nav>
+
+  <!--中间内容-->
+  <div  class="m-container-small m-padded-tb-big animated fadeIn">
+    <div class="ui container">
+      <!--header-->
+      <div class="ui top attached segment">
+        <div class="ui middle aligned two column grid">
+          <div class="column">
+            <h3 class="ui teal header">分类</h3>
+          </div>
+          <div class="right aligned column">
+            共 <h2 class="ui orange header m-inline-block m-text-thin" th:text="${#arrays.length(types)}"> 14 </h2> 个
+          </div>
+        </div>
+      </div>
+
+      <div class="ui attached segment m-padded-tb-large" th:unless="${activeTypeId == null && activeTypeId < 0}">
+        <div class="ui labeled button m-margin-tb-tiny" th:each="category : ${types}" >
+          <a href="#" th:href="@{'/category/' + ${category.id} + '/page/1'}" class="ui basic  button" th:classappend="${category.id==activeTypeId} ? 'teal':''" th:text="${category.name}">思考与感悟</a>
+          <div class="ui basic  left pointing label" th:classappend="${category.id==activeTypeId} ? 'teal':''" th:text="${category.blogCount}">24</div>
+        </div>
+      </div>
+
+      <div class="ui top attached teal segment">
+        <div class="ui padded vertical segment m-padded-tb-large" th:each="blog : ${page.list}">
+          <div class="ui middle aligned mobile reversed stackable grid" >
+            <div class="eleven wide column">
+              <h3 class="ui header" ><a href="#" th:href="@{/article/}+${blog.id} + '.html'" target="_blank" class="m-black" th:text="${blog.title}">你真的理解什么是财富自由吗?</a></h3>
+              <p class="m-text" th:text="|${blog.description}......|">正确做好任何一件事情的前提是清晰、正确的理解目标。而事实是，我们很多人很多时候根本没有对目标正确的定义，甚至根本从来就没有想过，只是大家都那么做而已…...</p>
+              <div class="ui grid">
+                <div class="eleven wide column">
+                  <div class="ui mini horizontal link list">
+                    <div class="item">
+                      <img src="https://unsplash.it/100/100?image=1005" th:src="@{${blog.user.avatar}}"  alt="" class="ui avatar image">
+                      <div class="content"><a href="#" th:href="@{/about}" class="header" th:text="${blog.user.nickname}" ></a></div>
+                    </div>
+                    <div class="item">
+                      <i class="calendar icon"></i><span th:text="${#dates.format(blog.updateTime,'yyyy-MM-dd')}">2017-10-01</span>
+                    </div>
+                    <div class="item">
+                      <i class="eye icon"></i> <span th:text="${blog.views}">2342</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="right aligned five wide column">
+                  <a href="#" th:if="${blog.type != null}" th:href="@{'/category/' + ${blog.type.id} + '/page/1'}" target="_blank"
+                     class="ui teal basic label m-padded-tiny m-text-thin"
+                     th:text="${blog.type.name}">认知升级</a>
+                  <a href="#" th:if="${blog.type == null}" target="_blank"
+                     class="ui teal basic label m-padded-tiny m-text-thin" >未分类</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="five wide column">
+              <a href="#" th:href="@{/article/}+${blog.id} + '.html'" target="_blank">
+                <img src="https://unsplash.it/800/450?image=1005" th:src="${blog.firstPicture}"  alt="" class="ui rounded image">
+              </a>
+            </div>
+
+          </div>
+        </div>
+        <div class="ui middle aligned center two column grid " style="padding-top: 30px">
+          <div class="row">
+            <div style="margin: 0 auto" class="ui mini borderless pagination menu"
+                 th:if="${page.pages}>1">
+              <a class="item" th:classappend="${page.isFirstPage?'disabled':''}"
+                 th:href="@{/category/} + ${activeTypeId} + '/page/' + ${page.prePage}" ><i
+                      class="left arrow icon"></i></a>
+              <a class="item" th:each="num : ${page.navigatepageNums}"
+                 th:classappend="${page.pageNum == num?'active':''}" th:text="${num}"
+                 th:href="@{/category/} + ${activeTypeId} + '/page/' + ${num}">1</a>
+              <a class="item" th:classappend="${page.isLastPage?'disabled':''}"
+                 th:href="@{/category/} + ${activeTypeId} + '/page/' + ${page.nextPage}" ><i
+                      class="icon right arrow"></i></a>
+            </div>
+          </div>
+          <div class="row">
+                            <span style="margin: 0 auto"
+                                  th:text="'当前第 ' + ${page.pageNum} + ' 页,总共 ' + ${page.pages} + ' 页,总记录数' + ${page.total}">共</span>
+          </div>
+        </div>
+      </div>
+
+
+
+
+    </div>
+  </div>
+
+  <br>
+  <br>
+  <!--底部footer-->
+  <footer  th:replace="home/_fragments :: footer" class="ui inverted vertical segment m-padded-tb-massive"></footer>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+
+  <script th:replace="home/_fragments :: header-footer-script(2)"></script>
+</body>
+</html>

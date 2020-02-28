@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="cn" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:replace="${title}">博客详情</title>
+    <link type="image/x-icon" rel="shortcut icon" href="/images/islizx.jpg"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
+    <link rel="stylesheet" href="../static/css/typo.css" th:href="@{/css/typo.css}">
+    <link rel="stylesheet" href="../static/css/animate.css" th:href="@{/css/animate.css}">
+    <link rel="stylesheet" href="../static/lib/prism/prism.css" th:href="@{/lib/prism/prism.css}">
+    <link rel="stylesheet" href="../static/lib/tocbot/tocbot.css" th:href="@{/lib/tocbot/tocbot.css}">
+    <link rel="stylesheet" href="../static/css/me.css" th:href="@{/css/me.css}">
+    <link rel="stylesheet" href="./css/index.css" th:href="@{/css/swiper.css}">
+    <script>
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?4f5553d30f9b70ee15bdcbc4353dd549";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+</head>
+<body>
+
+
+<!--导航-->
+<nav th:fragment="menu(n)" class="ui inverted attached segment m-padded-tb-mini m-shadow-small">
+
+    <div class="ui container">
+        <div th:fragment="header" id="header-container">
+            <div class="ui inverted secondary stackable menu">
+                <h2 class="ui teal header item" style="padding-left: 0"><a th:href="@{/}">Blog</a></h2>
+                <a href="#" th:href="@{/}" class="m-item item m-mobile-hide " th:classappend="${n==1} ? 'active'"><i
+                        class="mini home icon"></i>&nbsp;首页</a>
+                <a href="#" th:href="@{/category}" class="m-item item m-mobile-hide"
+                   th:classappend="${n==2} ? 'active'"><i
+                        class="mini idea icon"></i>&nbsp;分类</a>
+                <a href="#" th:href="@{/tag}" class="m-item item m-mobile-hide" th:classappend="${n==3} ? 'active'"><i
+                        class="mini tags icon"></i>&nbsp;标签</a>
+                <a href="#" th:href="@{/archives}" class="m-item item m-mobile-hide"
+                   th:classappend="${n==4} ? 'active'"><i
+                        class="mini clone icon"></i>&nbsp;归档</a>
+                <a href="#" th:href="@{/about}" class="m-item item m-mobile-hide" th:classappend="${n==5} ? 'active'"><i
+                        class="mini info icon"></i>&nbsp;关于我</a>
+
+                <div class="ui dropdown link item m-item m-mobile-hide"
+                     th:unless="${pagePageInfo == null || pagePageInfo.total == 0}" id="dropdown-box">
+                    <span class="text">&nbsp;&nbsp;其它</span>
+                    <i class="dropdown icon"></i>
+                    <div class="menu">
+                        <a class="item" th:each="page : ${pagePageInfo.list}" th:text="${page.title}" th:href="@{'/p/' + ${page.url}}">Home Goods</a>
+                    </div>
+                </div>
+
+                <div class="right stackable m-item item m-mobile-hide">
+                    <form name="search" action="#" th:action="@{/search}" method="post" target="_blank" style="width: 100%!important;">
+                        <div class="ui icon inverted transparent input m-margin-tb-tiny" style="width: 100%!important;">
+                            <input type="text" name="query" placeholder="Search...." th:value="${query}" style="width: 100%!important;">
+                            <i onclick="document.forms['search'].submit()" class="search link icon"></i>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a class="ui menu toggle black icon button m-right-top m-mobile-show" style="margin-right: 10px">
+        <i class="sidebar icon"></i>
+    </a>
+</nav>
+
+
+<!-- 分页组件 -->
+<div style="margin: 0 auto" th:fragment="paginaction" class="ui mini borderless pagination menu" th:if="${pageInfo.pages}>1">
+    <a class="item" th:classappend="${pageInfo.isFirstPage?'disabled':''}" th:href="@{/page/} + ${pageInfo.prePage}" ><i class="left arrow icon"></i></a>
+    <a class="item" th:each="num : ${pageInfo.navigatepageNums}" th:classappend="${pageInfo.pageNum == num?'active':''}" th:text="${num}" th:href="@{/page/} + ${num}">1</a>
+    <a class="item" th:classappend="${pageInfo.isLastPage?'disabled':''}" th:href="@{/page/} + ${pageInfo.nextPage}"><i class="icon right arrow"></i></a>
+</div>
+<!--<div style="margin: 0 auto" th:fragment="paginaction" class="ui mini borderless pagination menu"
+     th:if="${pageInfo.pages}>1">
+    <a class="item" th:classappend="${pageInfo.isFirstPage?'disabled':''}" onclick="page(this)"
+       th:attr="data-page=${pageInfo.prePage}" th:onclick="${pageInfo.isFirstPage}?'':'page(this)'"><i
+            class="left arrow icon"></i> <span aria-hidden="true">&laquo;</span></a>
+    <a class="item" th:each="num : ${pageInfo.navigatepageNums}" th:classappend="${pageInfo.pageNum == num?'active':''}"
+       onclick="page(this)" th:attr="data-page=${num}" th:text="${num}"
+       th:onclick="${pageInfo.pageNum == num}?'':'page(this)'">1</a>
+    <a class="item" th:classappend="${pageInfo.isLastPage?'disabled':''}" onclick="page(this)"
+       th:attr="data-page=${pageInfo.nextPage}" th:onclick="${pageInfo.isLastPage}?'':'page(this)'"><i
+            class="icon right arrow"></i></a>
+</div>-->
+<!-- 分页组件 -->
+
+<!--底部footer-->
+<footer th:fragment="footer" class="ui inverted vertical segment m-padded-tb-massive">
+    <div class="ui center aligned container">
+        <div th:fragment="widgetList" id="footer-container">
+            <div class="ui inverted divided stackable grid">
+                <div class="four wide column" th:each="widget : ${footerWidgets}"
+                     th:utext="${widget.widgetContent}"></div>
+            </div>
+        </div>
+        <div class="ui inverted section divider"></div>
+        <p class="m-text-thin m-text-spaced m-opacity-tiny" style="color: #ffffff">Copyright © 2020 - <span th:text="${#dates.year(#dates.createNow())}">2019</span>
+            isLizx -Blog Designed by Lizhixiang<br><br>
+            <a rel="nofollow" href="http://www.beian.miit.gov.cn" target="_blank">浙ICP备20005114号</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+            <a rel="nofollow" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33011802001928" target="_blank"><img style="margin-bottom: -4px;" src="/images/ghs.png">&nbsp;&nbsp;浙公网安备33011802001928</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+            <a rel="nofollow" href="https://tongji.baidu.com/web/welcome/ico?s=4f5553d30f9b70ee15bdcbc4353dd549" target="_blank"> 网站统计</a>
+        </p>
+    </div>
+
+</footer>
+
+<th:block th:fragment="script">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/jquery.scrollto@2.1.2/jquery.scrollTo.min.js"></script>
+    <script src="../static/lib/prism/prism.js" th:src="@{/lib/prism/prism.js}"></script>
+    <script src="../static/lib/tocbot/tocbot.min.js" th:src="@{/lib/tocbot/tocbot.min.js}"></script>
+    <script src="../static/lib/qrcode/qrcode.min.js" th:src="@{/lib/qrcode/qrcode.min.js}"></script>
+    <script src="../static/lib/waypoints/jquery.waypoints.min.js"
+            th:src="@{/lib/waypoints/jquery.waypoints.min.js}"></script>
+
+</th:block>
+
+<th:block th:fragment="header-footer-script(m)">
+    <script>
+        $('#footer-container').load("[[@{/footer}]]");
+        $('#header-container').load("[[@{/header}]]", {
+            m: [[${m}]]
+        },function () {
+            $('#dropdown-box').dropdown();
+        });
+        $(document).on("click",".menu.toggle",function(){
+            $('.m-item').toggleClass('m-mobile-hide');
+        });
+    </script>
+</th:block>
+
+</body>
+</html>

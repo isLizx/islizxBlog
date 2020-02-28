@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="cn" xmlns:th="http://www.thymeleaf.org">
+
+<!--导航-->
+<nav th:fragment="menu(n, m)" class="navbar-default navbar-static-side" role="navigation">
+    <div class="sidebar-collapse">
+        <ul class="nav metismenu" id="side-menu">
+            <li class="nav-header">
+                <div class="dropdown profile-element">
+                  <span>
+                    <img alt="image" class="img-circle" src="/img/profile_small.jpg" style="width: 45px; height: 45px;" th:src="${session.user.avatar}"/>
+                  </span>
+                    <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                        <span class="clear">
+                          <span class="block m-t-xs">
+                            <strong class="font-bold" th:text="${session.user.nickname}">RAYMOND</strong>
+                         </span>
+                          <span class="text-muted text-xs block" >[[${session.user.type == 0?'普通用户':'管理员'}]] <b class="caret"></b></span>
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu animated fadeInRight m-t-xs">
+                        <li><a href="profile.html" th:href="@{/admin/profile}">个人资料</a></li>
+                        <li class="divider"></li>
+                        <li><a href="login.html" th:href="@{/admin/logout}">退出</a></li>
+                    </ul>
+                </div>
+                <div class="logo-element">
+                    isLizx
+                </div>
+            </li>
+            <li th:class="${n==1} ? 'active'">
+                <a href="#" th:href="@{/admin}"><i class="glyphicon glyphicon-scale" aria-hidden="true"></i><span class="nav-label" th:text="仪表盘">Layouts</span></a>
+            </li>
+            <li th:class="${n==2} ? 'active'">
+                <a href="#"><i class="glyphicon glyphicon-book" aria-hidden="true"></i>
+                    <span class="nav-label">文章</span>
+                    <span class="fa arrow"></span>
+                </a>
+                <ul class="nav nav-second-level collapse">
+                    <li th:class="${n==2 && m==1} ? 'active'"><a href="#" th:href="@{/admin/blogs}" >所有文章</a></li>
+                    <li th:class="${n==2 && m==2} ? 'active'"><a href="#" th:text="写文章" th:href="@{/admin/blogs/input}">Dashboard v.2</a></li>
+                    <li th:class="${n==2 && m==3} ? 'active'"><a href="#" th:href="@{/admin/types/input}" th:text="分类">Dashboard v.3</a></li>
+                    <li th:class="${n==2 && m==4} ? 'active'"><a href="#" th:href="@{/admin/tags/input}" th:text="标签">Dashboard v.4</a></li>
+                    </li>
+                </ul>
+            </li>
+            <li th:class="${n==3} ? 'active'">
+                <a href="#"><i class="glyphicon glyphicon-blackboard" aria-hidden="true"></i>
+                    <span class="nav-label" th:text="页面">文章</span>
+                    <span class="fa arrow"></span>
+                </a>
+                <ul class="nav nav-second-level collapse">
+                    <li th:class="${n==3 && m==1} ? 'active'"><a href="#" th:href="@{/admin/pages}" th:text="所有页面">Dashboard v.1</a></li>
+                    <li th:class="${n==3 && m==2} ? 'active'"><a href="#" th:href="@{/admin/pages/input}" th:text="创建页面">Dashboard v.2</a></li>
+                    </li>
+                </ul>
+            </li>
+            <li th:class="${n==4} ? 'active'">
+                <a href="#"><i class="glyphicon glyphicon-bullhorn" aria-hidden="true"></i>
+                    <span class="nav-label" th:text="公告">文章</span>
+                    <span class="fa arrow"></span>
+                </a>
+                <ul class="nav nav-second-level collapse">
+                    <li th:class="${n==4 && m==1} ? 'active'"><a href="#" th:href="@{/admin/notices}" th:text="所有公告">Dashboard v.1</a></li>
+                    <li th:class="${n==4 && m==2} ? 'active'"><a href="#" th:href="@{/admin/notices/input}" th:text="创建公告">Dashboard v.2</a></li>
+                    </li>
+                </ul>
+            </li>
+            <li th:class="${n==5} ? 'active'">
+                <a href="#" th:href="@{/admin/attachments}"><i class="glyphicon glyphicon-picture" aria-hidden="true"></i><span class="nav-label" th:text="附件">Layouts</span></a>
+            </li>
+            <li th:class="${n==6} ? 'active'">
+                <a href="#" th:href="@{/admin/comments}"><i class="glyphicon glyphicon-comment" aria-hidden="true"></i><span class="nav-label" th:text="评论">Layouts</span></a>
+            </li>
+            <li th:class="${n==7} ? 'active'">
+                <a href="#"><i class="glyphicon glyphicon-pencil" aria-hidden="true"></i>
+                    <span class="nav-label" th:text="外观">文章</span>
+                    <span class="fa arrow"></span>
+                </a>
+                <ul class="nav nav-second-level collapse">
+                    <li th:class="${n==7 && m==1} ? 'active'"><a href="#" th:text="菜单">Dashboard v.1</a></li>
+                    <li th:class="${n==7 && m==2} ? 'active'"><a href="#" th:href="@{/admin/slides}" th:text="幻灯片">Dashboard v.2</a></li>
+                    <li th:class="${n==7 && m==3} ? 'active'"><a href="#" th:href="@{/admin/widgets}" th:text="小工具">Dashboard v.2</a></li>
+                    <li th:class="${n==7 && m==4} ? 'active'"><a href="#" th:href="@{/admin/links}" th:text="友链">Dashboard v.2</a></li>
+                    </li>
+                </ul>
+            </li>
+            <li th:class="${n==8} ? 'active'">
+                <a href="#"><i class="glyphicon glyphicon-user" aria-hidden="true"></i>
+                    <span class="nav-label" th:text="用户管理">文章</span>
+                    <span class="fa arrow"></span>
+                </a>
+                <ul class="nav nav-second-level collapse">
+                    <li th:class="${n==8 && m==1} ? 'active'"><a href="#" th:href="@{/admin/users}" th:text="用户列表">Dashboard v.1</a></li>
+                    <li th:class="${n==8 && m==2} ? 'active'"><a href="#" th:href="@{/admin/users/input}" th:text="添加用户">Dashboard v.2</a></li>
+                    <li th:class="${n==8 && m==3} ? 'active'"><a href="#" th:href="@{/admin/profile}" th:text="个人信息">Dashboard v.2</a></li>
+                    </li>
+                </ul>
+            </li>
+            <li th:class="${n==9} ? 'active'">
+                <a href="#" th:href="@{/admin/log}"><i class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></i><span class="nav-label" th:text="日志">Layouts</span></a>
+            </li>
+          <li th:class="${n==10} ? 'active'">
+            <a href="#"><i class="glyphicon glyphicon-cog" aria-hidden="true"></i>
+              <span class="nav-label" th:text="设置">文章</span>
+              <span class="fa arrow"></span>
+            </a>
+            <ul class="nav nav-second-level collapse">
+              <li th:class="${n==10 && m==1} ? 'active'"><a href="#" th:text="角色管理">Dashboard v.1</a></li>
+              <li th:class="${n==10 && m==2} ? 'active'"><a href="#" th:text="权限管理">Dashboard v.2</a></li>
+              </li>
+            </ul>
+          </li>
+        </ul>
+
+    </div>
+</nav>
+<!--导航-->
+
+<!-- border-bottom -->
+<div th:fragment="border-bottom" class="row border-bottom">
+    <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+        <div class="navbar-header">
+            <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"> </a>
+            <form role="search" class="navbar-form-custom" th:action="@{/search}" method="post" target="_blank" >
+                <div class="form-group">
+                    <input type="text" placeholder="搜索文章..." class="form-control" name="query"
+                           id="top-search" th:value="${query}">
+                </div>
+            </form>
+        </div>
+        <ul class="nav navbar-top-links navbar-right">
+            <li>
+                <span class="m-r-sm text-muted welcome-message">Welcome to isLizx Admin Theme.</span>
+            </li>
+            <li>
+                <a href="#" th:href="@{/admin/logout}">
+                    <span class="glyphicon glyphicon-log-out" aria-hidden="true" /> 退出登录
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+<!-- border-bottom -->
+
+
+
+
+<!-- footer -->
+<div th:fragment="footer" class="footer">
+    <div class="pull-right">
+        Thanks for using <strong>isLizx</strong> .
+    </div>
+    <div>
+        <strong>Copyright</strong> isLizx &copy; 2020-[[${#dates.format(new java.util.Date().getTime(), 'yyyy')}]]
+    </div>
+</div>
+<!-- footer -->
+
+
+<!-- 分页组件 -->
+<nav th:fragment="paginaction" aria-label="Page navigation" th:if="${pageInfo.pages}>1">
+    <ul class="pagination">
+        <li th:class="${pageInfo.isFirstPage?'disabled':''}">
+            <a aria-label="Previous" onclick="page(this)" th:attr="data-page=${pageInfo.prePage}" th:onclick="${pageInfo.isFirstPage}?'':'page(this)'">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        <li th:each="num : ${pageInfo.navigatepageNums}" th:class="${pageInfo.pageNum == num?'active':''}"><a onclick="page(this)" th:attr="data-page=${num}" th:text="${num}"  th:onclick="${pageInfo.pageNum == num}?'':'page(this)'">1</a></li>
+        <li th:class="${pageInfo.isLastPage?'disabled':''}">
+            <a aria-label="Next" onclick="page(this)" th:attr="data-page=${pageInfo.nextPage}" th:onclick="${pageInfo.isLastPage}?'':'page(this)'">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+<!-- 分页组件 -->
+
+
+</html>

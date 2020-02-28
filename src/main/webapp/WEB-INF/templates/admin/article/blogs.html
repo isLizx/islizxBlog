@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="cn" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="utf-8">
+    <link type="image/x-icon" rel="shortcut icon" href="/images/islizx.jpg"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>isLizx | 所有文章</title>
+
+    <!--<link rel="stylesheet" href="https://www.jq22.com/jquery/bootstrap-3.3.4.css">
+    <link rel="stylesheet" href="https://www.jq22.com/jquery/font-awesome.4.6.0.css">-->
+    <link href="/css/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <!-- Toastr style -->
+    <link href="/css/plugins/toastr/toastr.min.css" rel="stylesheet">
+
+    <link href="/css/animate.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="/plugins/font/css/font-awesome.css">
+    <style type="text/css">
+        .draft, .publish, .trash, .checking {
+            list-style: none;
+            float: left;
+            margin: 0;
+            padding-bottom: 10px;
+        }
+
+        .blackcolor {
+            color: #000;
+        }
+
+        .hiddendiv{
+            display: none;
+        }
+
+        .showdiv{
+            display: block;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div id="wrapper">
+    <nav class="navbar-default navbar-static-side" role="navigation" th:replace="admin/_fragments :: menu(2, 1)"></nav>
+
+    <div id="page-wrapper" class="gray-bg">
+        <div class="row border-bottom" th:replace="admin/_fragments :: border-bottom"></div>
+        <div class="row wrapper border-bottom white-bg page-heading">
+            <div class="col-lg-10">
+                <h2>文章管理</h2>
+                <ol class="breadcrumb">
+                    <li>
+                        <a href="index.html" th:href="@{/admin}" th:text="首页">Home</a>
+                    </li>
+                    <li>
+                        <a>文章</a>
+                    </li>
+                    <li class="active">
+                        <strong>所有文章</strong>
+                    </li>
+                </ol>
+            </div>
+            <div class="col-lg-2">
+            </div>
+        </div>
+        <div class="wrapper wrapper-content  animated fadeInRight">
+            <input type="hidden" name="pageIndex">
+            <input type="hidden" name="searchType">
+            <input type="hidden" name="blogSource">
+            <input type="hidden" name="published" th:value="${published}">
+            <input type="hidden" name="sort">
+            <input type="hidden" name="order">
+            <input type="hidden" name="keywords">
+            <div class="row" id="msgdiv">
+                <div class="col-lg-12">
+                    <div class="alert alert-info alert-dismissible fade in" role="alert" th:unless="${#strings.isEmpty(msg)}" >
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <strong th:text="${msg}">更新成功</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox">
+                        <div class="ibox-title">
+                            <h5>文章列表</h5>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <ul style="list-style: none;padding-left: 0;vertical-align: center;">
+                                        <li class="publish"><a href="/admin/blogs?published=0"
+                                                               th:class="${published == 0?'blackcolor':''}">已发布&nbsp;<span>([[${publish}]])</span></a>&nbsp;|&nbsp;
+                                        </li>
+                                        <li class="draft"><a href="/admin/blogs?published=1"
+                                                             th:class="${published == 1?'blackcolor':''}">草稿&nbsp;<span>([[${draft}]])</span></a>&nbsp;|&nbsp;
+                                        </li>
+                                        <li class="trash"><a href="/admin/blogs?published=2"
+                                                             th:class="${published == 2?'blackcolor':''}">回收站&nbsp;<span>([[${trash}]])</span></a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="col-md-4 col-xs-12" style="padding-left: 0; margin-bottom: 10px">
+                                        <a type="button" class="btn btn-primary" th:href="@{/admin/blogs/input}"><span
+                                                class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
+                                        </a>
+                                        <button type="button" class="btn btn-danger" id="blog_delete_all_btn"><span
+                                                class="glyphicon glyphicon-remove" aria-hidden="true"></span> 批量删除
+                                        </button>
+                                    </div>
+                                    <div class="col-md-8 col-xs-12"
+                                         style="margin-bottom: 10px; text-align:right;padding-left: 0; padding-right: 0;">
+                                        <form class="form-inline">
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" id="keywords"
+                                                       placeholder="关键字" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <select class="form-control" id="searchType">
+                                                    <option disabled="disabled" value="title">搜索范围</option>
+                                                    <option value="title" selected>标题</option>
+                                                    <option value="content">内容</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <select class="form-control" id="blogSource">
+                                                    <option disabled="disabled" value="原创">文章来源</option>
+                                                    <option value="原创" selected>原创</option>
+                                                    <option value="转载">转载</option>
+                                                    <option value="翻译">翻译</option>
+                                                </select>
+                                            </div>
+                                            <!--<div class="form-group">
+                                                <select class="form-control" id="published">
+                                                    <option disabled="disabled" value="0">状态</option>
+                                                    <option value="0" selected>已发布</option>
+                                                    <option value="1">草稿</option>
+                                                    <option value="2">回收站</option>
+                                                </select>
+                                            </div>-->
+                                            <div class="form-group">
+                                                <select class="form-control" id="sort">
+                                                    <option disabled="disabled" value="createTime">排序字段</option>
+                                                    <option value="createTime" selected>发布时间</option>
+                                                    <option value="views">访问量</option>
+                                                    <option value="comment_count">评论数</option>
+                                                    <option value="like_count">点赞数</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <select class="form-control" id="order">
+                                                    <option disabled="disabled" value="asc">升序/降序</option>
+                                                    <option value="asc" selected>升序</option>
+                                                    <option value="desc" selected>降序</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <button type="button" class="btn btn-primary" id="search-btn">搜索
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="table-container" th:fragment="blogList">
+                                <div class="table-responsive">
+                                    <table class="table table-hover issue-tracker">
+                                        <thead>
+                                        <tr>
+                                            <th><input type="checkbox" id="check_all"></th>
+                                            <th>文章来源</th>
+                                            <th class="col-md-6">标题</th>
+                                            <th>评论</th>
+                                            <th>点赞数</th>
+                                            <th>访问量</th>
+                                            <th>日期</th>
+                                            <th class="col-md-2">操作</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="blog : ${pageInfo.list}">
+                                            <td>
+                                                <input type="checkbox" class="check_item" th:attr="data-blogid=${blog.id}">
+                                            </td>
+                                            <td th:text="${blog.flag}">
+                                                Adrian Novak
+                                            </td>
+                                            <td class="issue-info">
+                                                <a href="#" th:text="${blog.title}">
+                                                    ISSUE-23
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <span class="badge" th:text="${blog.commentCount}">3</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge" th:text="${blog.likeCount}">3</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge" th:text="${blog.views}">3</span>
+                                            </td>
+                                            <td th:text="${#dates.format(blog.createTime,'yyyy-MM-dd HH:mm:ss')}">
+                                            </td>
+                                            <td class="text-left">
+                                                <a class="btn btn-success btn-xs" th:if="${published == 0}" th:href="@{/article/} + ${blog.id} + '.html'" target="_blank"> 查看</a>
+                                                <a class="btn btn-success btn-xs" th:unless="${published == 0}" onclick="pubBlog(this)" th:attr="data-blogId=${blog.id}, data-blogTitle=${blog.title}"> 发布</a>
+                                                <a class="btn btn-info btn-xs" th:href="@{/admin/blogs/input/}+${blog.id}"> 编辑</a>
+                                                <a onclick="delBlog(this)" th:attr="data-blogId=${blog.id}, data-blogTitle=${blog.title}" class="btn btn-danger btn-xs"> 丢弃</a>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="row">
+                                    <div class="row" style="text-align: center">
+                                        <nav th:replace="admin/_fragments :: paginaction"></nav>
+                                    </div>
+                                    <div class="row" style="line-height: 73px; text-align: center">
+                                        <span th:text="'当前第 ' + ${pageInfo.pageNum} + ' 页,总共 ' + ${pageInfo.pages} + ' 页,总记录数' + ${pageInfo.total}">共</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer" th:replace="admin/_fragments :: footer"></div>
+
+    </div>
+</div>
+
+
+<!-- Mainly scripts -->
+<script src="/js/jquery-2.1.1.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+
+<!-- Custom and plugin javascript -->
+<script src="/js/inspinia.js"></script>
+<script src="/js/plugins/pace/pace.min.js"></script>
+
+<!-- Peity -->
+<script src="/js/plugins/peity/jquery.peity.min.js"></script>
+
+<!-- Peity demo data -->
+<script src="/js/demo/peity-demo.js"></script>
+<script>
+        function page(obj) {
+            $("[name='pageIndex']").val($(obj).data("page"));
+            loaddataByBlog();
+            return false;
+        }
+
+        $("#search-btn").click(function () {
+            $("[name='pageIndex']").val(0);
+            $("[name='searchType']").val($("#searchType").val());
+            $("[name='blogSource']").val($("#blogSource").val());
+            /*$("[name='published']").val($("#published").val());*/
+            $("[name='sort']").val($("#sort").val());
+            $("[name='order']").val($("#order").val());
+            $("[name='keywords']").val($("#keywords").val());
+            loaddataByBlog();
+            return false;
+        });
+
+        function loaddataByBlog() {
+            $("#table-container").load("[[@{/admin/blogs/search}]]", {
+                pageIndex: $("[name='pageIndex']").val(),
+                searchType: $("[name='searchType']").val(),
+                blogSource: $("[name='blogSource']").val(),
+                published: $("[name='published']").val(),
+                sort: $("[name='sort']").val(),
+                order: $("[name='order']").val(),
+                keywords: $("[name='keywords']").val()
+            });
+            $.ajax({
+                url: "[[@{/admin/blogs/getpublishedsize/}]]",
+                success:function (result) {
+                    $(".publish").find("a").find("span").text("(" + result.extend.publish + ")");
+                    $(".draft").find("a").find("span").text("(" + result.extend.draft + ")");
+                    $(".trash").find("a").find("span").text("(" + result.extend.trash + ")");
+                }
+            });
+        }
+
+        // 发布文章
+        function pubBlog(obj) {
+            var pubBlogTitle = $(obj).data("blogtitle");
+            var pubBlogId = $(obj).data("blogid");
+            if(confirm("确认要发布标题为:【" + pubBlogTitle + "】的文章吗?")){
+                // 发送ajax请求发布
+                $.ajax({
+                    url:"[[@{/admin/blogs/revert}]]?id=" + pubBlogId,
+                    type:"PUT",
+                    success:function (result) {
+                        var str = '<div class="col-lg-12"><div class="alert alert-info alert-dismissible fade in" role="alert">' +
+                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                            '<strong>' + result.extend.msg + '</strong></div></div>';
+                        $("#msgdiv").append(str);
+                        loaddataByBlog();
+                    }
+                });
+            }
+        }
+
+        // 删除文章
+        function delBlog(obj){
+            var delBlogTitle = $(obj).data("blogtitle");
+            var delBlogId = $(obj).data("blogid");
+            var flag = false;
+            if($("[name='published']").val() == '2'){
+                flag = confirm("确认要彻底删除标题为:【" + delBlogTitle + "】的文章吗?");
+            }else{
+                flag = confirm("确认要将标题为:【" + delBlogTitle + "】的文章仍入回收站吗?");
+            }
+
+            if(flag){
+                // 发送ajax请求删除
+                $.ajax({
+                    url:"[[@{/admin/blogs/}]]" + delBlogId,
+                    type:"DELETE",
+                    success:function (result) {
+
+                        /*<div class="alert alert-info alert-dismissible fade in" role="alert">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <strong th:text="${msg}">更新成功</strong>
+                                </div>*/
+                        var str = '<div class="col-lg-12"><div class="alert alert-info alert-dismissible fade in" role="alert">' +
+                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                            '<strong>' + result.extend.msg + '</strong></div></div>';
+                        $("#msgdiv").append(str);
+                        loaddataByBlog();
+                    }
+                });
+            }
+        }
+
+        // 完成全选全部选的功能
+        $(document).on("click","#check_all",function(){
+            $(".check_item").prop("checked",$(this).prop("checked"));
+        });
+
+        // check_itme
+        $(document).on("click",".check_item",function(){
+            // 判断当前选择的元素是否5个
+            var flag = $(".check_item:checked").length == $(".check_item").length;
+            $("#check_all").prop("checked",flag);
+        });
+
+        // 点击全部删除，就批量删除
+        $("#blog_delete_all_btn").click(function(){
+            var del_idstr = "";
+            $.each($(".check_item:checked"),function(){
+                del_idstr += $(this).data("blogid") + "-";
+            });
+            del_idstr = del_idstr.substring(0,del_idstr.length-1);
+            if(del_idstr == ""){
+                var str = '<div class="col-lg-12"><div class="alert alert-danger alert-dismissible fade in" role="alert">' +
+                    '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                    '<strong>' + "请选择文章" + '</strong></div></div>';
+                $("#msgdiv").append(str);
+                return false;
+            }
+            if(confirm("确认要删除选中文章吗?")){
+                // 发送ajax请求删除
+                $.ajax({
+                    url:"[[@{/admin/blogs/batchDelete}]]?del_idstr=" + del_idstr,
+                    type:"DELETE",
+                    success:function (result) {
+                        $("#check_all").prop("checked",false);
+                        var str = '<div class="col-lg-12"><div class="alert alert-info alert-dismissible fade in" role="alert">' +
+                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                            '<strong>' + result.extend.msg + '</strong></div></div>';
+                        $("#msgdiv").append(str);
+                        loaddataByBlog();
+                    }
+                });
+            }
+        });
+</script>
+</body>
+
+</html>

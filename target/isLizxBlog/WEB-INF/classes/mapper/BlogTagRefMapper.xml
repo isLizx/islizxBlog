@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.islizx.mapper.BlogTagRefMapper">
+    <resultMap id="BaseResultMap" type="com.islizx.entity.BlogTagRef">
+        <result column="blogs_id" jdbcType="INTEGER" property="blogsId" />
+        <result column="tags_id" jdbcType="INTEGER" property="tagsId" />
+    </resultMap>
+
+    <sql id="tb">t_blog_t_tag</sql>
+
+    <insert id="insert" parameterType="java.lang.Integer" >
+        insert into <include refid="tb"/>
+        (blogs_id, tags_id)
+        values (#{blogsId}, #{tagsId})
+    </insert>
+
+    <delete id="deleteByTagId" parameterType="java.lang.Integer" >
+        delete from <include refid="tb"/> where tags_id = #{value}
+    </delete>
+
+    <delete id="deleteByBlogId" parameterType="java.lang.Integer" >
+        delete from <include refid="tb"/> where blogs_id = #{value}
+    </delete>
+
+    <select id="countBlogByTagId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select count(*) from <include refid="tb"/>
+        where tags_id = #{value}
+    </select>
+
+    <select id="listTagByBlogId" parameterType="java.lang.Integer" resultType="com.islizx.entity.Tag">
+    SELECT t_tag.* FROM t_tag, t_blog_t_tag
+    WHERE t_blog_t_tag.blogs_id = #{value} AND
+    t_blog_t_tag.tags_id = t_tag.id
+  </select>
+
+    <select id="countBlogByTagIdByHome" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select count(*) from (
+            (select * from t_blog where t_blog.id in
+            (
+                select blogs_id from t_blog_t_tag
+                where tags_id = #{value}
+            )) as a
+        ) where published = 0 AND posttype = 0
+    </select>
+
+
+</mapper>

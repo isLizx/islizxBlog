@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="cn" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link type="image/x-icon" rel="shortcut icon" href="/images/islizx.jpg"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博客管理登录</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
+    <link rel="stylesheet" href="/css/login.css">
+</head>
+<body>
+
+<br>
+<br>
+<br>
+<div class="m-container-small m-padded-tb-massive" style="max-width: 30em !important;">
+    <div class="ur container">
+        <div class="ui middle aligned center aligned grid">
+            <div class="column">
+                <h2 class="ui teal image header">
+                    <div class="content">
+                        管理后台登录
+                    </div>
+                </h2>
+                <form class="ui large form" id="loginForm" method="post" action="/loginVerify">
+                    <div class="ui  segment">
+                        <div class="field">
+                            <div class="ui left icon input">
+                                <i class="user icon"></i>
+                                <input type="text" name="username" placeholder="用户名" th:value="${username}" required>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui left icon input">
+                                <i class="lock icon"></i>
+                                <input type="password" name="password" placeholder="密码" th:value="${password}" required>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui left icon input">
+                                <i class="write icon"></i>
+                                <input type="number" name="verifyCode" placeholder="验证码" required>
+                                &nbsp;
+                                <img id="verifyCodeImg" src="verifyCode" class="img-rounded" alt="点击获取验证码" title="点击刷新"
+                                     onclick="this.src='verifyCode?code='+Date.parse(new Date())"/>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui checkbox">
+                                <input name="rememberme" type="checkbox" id="rememberme" th:attr="checked=${username != null && !#strings.isEmpty(username)}">
+                                <label for="rememberme" > 记住密码</label>
+                            </div>
+                        </div>
+                        <button type="button" id="login-submit-btn" class="ui fluid large teal button">登 录</button>
+                    </div>
+
+                    <div id="error_message" th:text="${msg}" th:class="${msg} ne null?'ui mini negative message' "></div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+<script th:inline="javascript">
+    // 获取项目路径
+    /*<![CDATA[*/
+    var context = /*[[@{/}]]*/;
+    /*]]>*/
+    // 获取图片验证码路径
+    var verifyCodeUrl =  [[@{/loginVerify}]];
+        // 获取后台首页路径
+        var adminUrl = [[@{/admin}]];
+</script>
+<script type="text/javascript">
+    $(function () {
+
+
+
+// 显示校验结果的提示信息
+        function show_validate_msg(ele, status, msg) {
+            $(ele).parent().parent().removeClass("error");
+            $("#error_message").removeClass("ui mini negative message").text("");
+            if ("error" == status) {
+                $(ele).parent().parent().addClass("error");
+                $(ele).next("span").text(msg);
+                $("#error_message").addClass("ui mini negative message").text(msg);
+            }
+        }
+
+// 提交表单
+        $("#login-submit-btn").on('click', function () {
+            var username = $("[name=username]").val();
+            var password = $("[name=password]").val();
+            var verifyCode = $("[name=verifyCode]").val();
+            if (username == "") {
+                show_validate_msg("[name=username]", "error", "请输入用户名");
+                return false;
+            } else {
+                show_validate_msg("[name=username]", "", "");
+            }
+            if (password == "") {
+                show_validate_msg("[name=password]", "error", "请输入密码");
+                return false;
+            } else {
+                show_validate_msg("[name=password]", "", "");
+            }
+            if (verifyCode == "") {
+                show_validate_msg("[name=verifyCode]", "error", "请输入验证码");
+                return false;
+            } else {
+                show_validate_msg("[name=verifyCode]", "", "");
+            }
+            $.ajax({
+                async: false,//同步，待请求完毕后再执行后面的代码
+                url: verifyCodeUrl,
+                type: "POST",
+                contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                dataType: "json",
+                data: $("#loginForm").serialize(),
+                success: function (data) {
+                    if (data.extend.code == 101) {
+                        $("[name=verifyCode]").parent().parent().addClass("error");
+                    } else if (data.extend.code == 102) {
+                        $("[name=password]").parent().parent().addClass("error");
+                    } else if (data.extend.code == 103) {
+                        $("[name=username]").parent().parent().addClass("error");
+                    } else {
+                        // js删除cookie
+                        console.log($('#rememberme').is(":checked"))
+                        if ($('#rememberme').is(":checked") == false) {
+                            document.cookie;
+                            delCookie("username");
+                            delCookie("password");
+                            document.cookie;
+                        }
+                        window.location.href = adminUrl;
+                        return;
+                    }
+                    document.getElementById("verifyCodeImg").onclick();
+                    $("#error_message").addClass("ui mini negative message").text(data.extend.msg);
+                },
+                error: function () {
+                    document.getElementById("verifyCodeImg").onclick();
+                    $("#error_message").addClass("ui mini negative message").text("数据获取失败");
+                }
+            });
+        });
+
+//取cookies
+        function getCookie(name) {
+            let arr = document.cookie.match(new RegExp("(^| )" + name + "=([^;]*)(;|$)"));
+            if (arr != null) return unescape(arr[2]);
+            return null;
+        }
+
+//删除cookie
+        function delCookie(name) {
+            // 获取项目路径
+
+            var exp = new Date();
+            exp.setTime(exp.getTime() - 1);
+            var cval = getCookie(name);
+            if (cval != null)
+                document.cookie = name + "=" + cval + ";expires=" + exp.toGMTString() + ";" + context;
+        }
+
+    });
+
+</script>
+
+</body>
+</html>

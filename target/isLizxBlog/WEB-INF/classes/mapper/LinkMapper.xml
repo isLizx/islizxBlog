@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.islizx.mapper.LinkMapper">
+    <resultMap id="BaseResultMap" type="com.islizx.entity.Link">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="linkname" property="linkName" jdbcType="VARCHAR"/>
+        <result column="linkurl" property="linkUrl" jdbcType="VARCHAR"/>
+        <result column="linkpic" property="linkPic" jdbcType="VARCHAR"/>
+        <result column="linkdesc" property="linkDesc" jdbcType="VARCHAR"/>
+        <result column="linkcreatetime" property="linkCreateTime" jdbcType="TIMESTAMP"/>
+
+    </resultMap>
+
+    <sql id="tb">t_link</sql>
+
+    <sql id="Base_Column_List">
+    id, linkname, linkurl, linkpic, linkdesc, linkcreatetime
+  </sql>
+
+
+    <insert id="insert" parameterType="com.islizx.entity.Link" useGeneratedKeys="true" keyProperty="id">
+        insert into
+        <include refid="tb"/>
+        (linkname,linkurl,linkpic,linkdesc,linkcreatetime)
+        values (#{linkName,jdbcType=VARCHAR}, #{linkUrl,jdbcType=VARCHAR}, #{linkPic,jdbcType=VARCHAR}
+        , #{linkDesc,jdbcType=VARCHAR}, #{linkCreateTime,jdbcType=TIMESTAMP})
+    </insert>
+
+
+    <update id="update" parameterType="com.islizx.entity.Link">
+        update
+        <include refid="tb"/>
+        <set>
+            <if test="id != null">id = #{id,jdbcType=INTEGER},</if>
+            <if test="linkName != null">linkname = #{linkName,jdbcType=VARCHAR},</if>
+            <if test="linkUrl != null">linkurl = #{linkUrl,jdbcType=VARCHAR},</if>
+            <if test="linkPic != null">linkpic = #{linkPic,jdbcType=VARCHAR},</if>
+            <if test="linkDesc != null">linkdesc = #{linkDesc,jdbcType=VARCHAR},</if>
+            <if test="linkCreateTime != null">linkcreatetime = #{linkCreateTime,jdbcType=TIMESTAMP},</if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+
+    <select id="getById" parameterType="Integer" resultType="com.islizx.entity.Link">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+        WHERE
+        id=#{value}
+    </select>
+
+    <select id="getAll" resultType="com.islizx.entity.Link">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+        ORDER BY linkcreateTime DESC
+    </select>
+
+
+    <!--删除幻灯片-->
+    <delete id="delete" parameterType="Integer">
+        DELETE FROM
+        <include refid="tb"/>
+        WHERE id=#{value}
+    </delete>
+
+
+
+</mapper>

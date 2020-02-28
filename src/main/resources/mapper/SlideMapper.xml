@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.islizx.mapper.SlideMapper">
+    <resultMap id="BaseResultMap" type="com.islizx.entity.Slide">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="slide_title" property="slideTitle" jdbcType="VARCHAR"/>
+        <result column="slide_url" property="slideUrl" jdbcType="VARCHAR"/>
+        <result column="slide_picture_url" property="slidePictureUrl" jdbcType="VARCHAR"/>
+        <result column="slide_sort" property="slideSort" jdbcType="INTEGER"/>
+        <result column="slide_target" property="slideTarget" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="tb">t_slide</sql>
+
+    <sql id="Base_Column_List">
+    id, slide_title, slide_url, slide_picture_url, slide_sort, slide_target
+  </sql>
+
+
+    <insert id="insert" parameterType="com.islizx.entity.Slide" useGeneratedKeys="true" keyProperty="id">
+        insert into
+        <include refid="tb"/>
+        (slide_title,slide_url,slide_picture_url,slide_sort,slide_target)
+        values (#{slideTitle,jdbcType=VARCHAR}, #{slideUrl,jdbcType=VARCHAR}, #{slidePictureUrl,jdbcType=VARCHAR}
+        , #{slideSort,jdbcType=INTEGER}, #{slideTarget,jdbcType=VARCHAR})
+    </insert>
+
+
+    <update id="update" parameterType="com.islizx.entity.Slide">
+        update
+        <include refid="tb"/>
+        <set>
+            <if test="id != null">id = #{id,jdbcType=INTEGER},</if>
+            <if test="slideTitle != null">slide_title = #{slideTitle,jdbcType=VARCHAR},</if>
+            <if test="slideUrl != null">slide_url = #{slideUrl,jdbcType=VARCHAR},</if>
+            <if test="slidePictureUrl != null">slide_picture_url = #{slidePictureUrl,jdbcType=VARCHAR},</if>
+            <if test="slideSort != null">slide_sort = #{slideSort,jdbcType=INTEGER},</if>
+            <if test="slideTarget != null">slide_target = #{slideTarget,jdbcType=VARCHAR},</if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+
+    <select id="findAll" resultType="com.islizx.entity.Slide">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+        order by slide_sort DESC
+    </select>
+
+    <select id="getSlideById" parameterType="Integer" resultType="com.islizx.entity.Slide">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+        WHERE
+        id=#{value}
+    </select>
+
+
+    <!--删除幻灯片-->
+    <delete id="deleteSlide" parameterType="Integer">
+        DELETE FROM
+        <include refid="tb"/>
+        WHERE id=#{value}
+    </delete>
+
+
+
+</mapper>

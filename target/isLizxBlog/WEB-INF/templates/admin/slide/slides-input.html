@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="cn" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+    <meta charset="utf-8">
+    <link type="image/x-icon" rel="shortcut icon" href="/images/islizx.jpg"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>isLizx | 幻灯片</title>
+
+    <!--<link rel="stylesheet" href="https://www.jq22.com/jquery/bootstrap-3.3.4.css">
+    <link rel="stylesheet" href="https://www.jq22.com/jquery/font-awesome.4.6.0.css">-->
+    <link href="/css/plugins/toastr/toastr.min.css" rel="stylesheet">
+    <link href="/css/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="/css/animate.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="/plugins/font/css/font-awesome.css">
+
+</head>
+
+<body>
+
+<div id="wrapper">
+
+    <nav class="navbar-default navbar-static-side" role="navigation" th:replace="admin/_fragments :: menu(7, 2)"></nav>
+
+    <div id="page-wrapper" class="gray-bg">
+        <div class="row border-bottom" th:replace="admin/_fragments :: border-bottom"></div>
+        <div class="row wrapper border-bottom white-bg page-heading">
+            <div class="col-lg-10">
+                <h2>幻灯片</h2>
+                <ol class="breadcrumb">
+                    <li>
+                        <a href="index.html" th:href="@{/admin}" th:text="首页">Home</a>
+                    </li>
+                    <li>
+                        <a th:text="外观">Home</a>
+                    </li>
+                    <li class="active">
+                        <strong>幻灯片</strong>
+                    </li>
+                </ol>
+            </div>
+            <div class="col-lg-2">
+            </div>
+        </div>
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="row" id="msgdiv">
+                        <div class="col-lg-12">
+                            <div class="alert alert-info alert-dismissible fade in" role="alert" th:unless="${#strings.isEmpty(msg)}" >
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                <strong th:text="${msg}">更新成功</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" id="msgdiv-danger">
+                        <div class="col-lg-12">
+                        </div>
+                    </div>
+                    <div class="ibox">
+                        <div class="ibox-title">
+                            <h5 th:text="更新幻灯片"></h5>
+                        </div>
+                        <div class="ibox-content">
+                                <form id="type-from" method="post" th:object="${slide}" th:action="@{/admin/slides/save}" class="form-horizontal">
+                                    <input type="hidden" id="slideId" name="id" th:value="*{id}">
+                                    <!-- 名称 -->
+                                    <div class="form-group">
+                                        <div class="col-sm-12">
+                                            <div class="input-group m-b"><span class="input-group-btn">
+                                            <button type="button" class="btn btn-primary">标题</button> </span>
+                                                <input type="text" name="slideTitle" th:value="*{slideTitle}" class="form-control" placeholder="请输入标题" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- 链接地址 -->
+                                    <div class="form-group">
+                                        <div class="col-sm-12">
+                                            <div class="input-group m-b"><span class="input-group-btn">
+                                            <button type="button" class="btn btn-primary">链接地址</button> </span>
+                                                <input type="text" name="slideUrl" th:value="*{slideUrl}" class="form-control" placeholder="请输入链接地址" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- 图片链接地址 -->
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label">图片链接地址:</label>
+                                        <div class="col-sm-9">
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" name="slidePictureUrl" th:value="*{slidePictureUrl}" required>
+                                                <span class="input-group-btn"><button type="button" class="btn btn-primary">选择</button> </span></div>
+                                        </div>
+                                    </div>
+                                    <!-- 排序编号 -->
+                                    <div class="form-group">
+                                        <div class="col-sm-12">
+                                            <div class="input-group m-b"><span class="input-group-btn">
+                                            <button type="button" class="btn btn-primary">排序编号:</button> </span>
+                                                <input type="number" min="1" max="10" name="slideSort" th:value="*{slideSort}" class="form-control" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- 打开方式 -->
+                                    <div class="form-group">
+                                        <div class="col-sm-12">
+                                            <div class="input-group m-b"><span class="input-group-btn">
+                                            <button type="button" class="btn btn-primary">打开方式</button> </span>
+                                                <select class="form-control m-b" name="slideTarget">
+                                                    <option th:text="当前窗口" th:value="当前窗口" th:selected="${slide.slideTarget == '当前窗口'}">当前窗口</option>
+                                                    <option th:text="新窗口" th:value="新窗口" th:selected="${slide.slideTarget == '新窗口'}">新窗口</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- 提交 -->
+                                    <div class="form-group">
+                                        <div class="col-sm-12" style="text-align: right">
+                                            <button class="btn btn-primary" type="submit"><strong>确定更新</strong></button>
+                                        </div>
+                                    </div>
+                                </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="ibox">
+                        <div class="ibox-title">
+                            <h5 th:text="所有分类"></h5>
+                        </div>
+                        <div class="ibox-content">
+                            <input type="hidden" name="pageIndex">
+                            <div id="table-container" th:fragment="slideList">
+                                <div class="table-responsive">
+                                    <table class="table table-hover issue-tracker">
+                                        <thead>
+                                        <tr>
+                                            <th>标题</th>
+                                            <th class="col-md-4">操作</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="slide : ${slides}">
+                                            <td th:text="${slide.slideTitle}"></td>
+                                            <td class="text-left">
+                                                <a class="btn btn-info btn-xs" th:href="@{/admin/slides/edit/}+${slide.id}"> 编辑</a>
+                                                <a onclick="delSlide(this)" th:attr="data-slideId=${slide.id}, data-slideTitle=${slide.slideTitle}" class="btn btn-danger btn-xs"> 永久删除</a>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer" th:replace="admin/_fragments :: footer"></div>
+
+    </div>
+</div>
+
+
+<!-- Mainly scripts -->
+<script src="/js/jquery-2.1.1.js"></script>
+<script src="/js/bootstrap.js"></script>
+<script src="/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+
+<!-- Custom and plugin javascript -->
+<script src="/js/inspinia.js"></script>
+<script src="/js/plugins/pace/pace.min.js"></script>
+
+<!-- Sparkline -->
+<script src="/js/plugins/sparkline/jquery.sparkline.min.js"></script>
+
+<script type="text/javascript">
+
+
+        $("#sparkline1").sparkline([34, 43, 43, 35, 44, 32, 44, 48], {
+            type: 'line',
+            width: '100%',
+            height: '50',
+            lineColor: '#1ab394',
+            fillColor: "transparent"
+        });
+
+
+        // 加载幻灯片列表
+        function loaddataBySlide() {
+            $("#table-container").load("[[@{/admin/slides/slideByJson}]]", {
+            });
+        }
+
+        // 删除幻灯片
+        function delSlide(obj){
+            var delSlideTitle = $(obj).data("slidetitle");
+            var delSlideId = $(obj).data("slideid");
+
+            if(confirm("确认要丢弃:【" + delSlideTitle + "】幻灯片吗?")){
+                // 发送ajax请求删除
+                $.ajax({
+                    url:"[[@{/admin/slides/delete}]]?id=" + delSlideId,
+                    type:"DELETE",
+                    success:function (result) {
+                        var str = '<div class="col-lg-12"><div class="alert alert-info alert-dismissible fade in" role="alert">' +
+                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                            '<strong>' + result.extend.msg + '</strong></div></div>';
+                        $("#msgdiv").append(str);
+                        loaddataBySlide();
+                    }
+                });
+            }
+        }
+
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.islizx.mapper.AttachmentMapper">
+    <resultMap id="BaseResultMap" type="com.islizx.entity.Attachment">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="attachname" property="attachName" jdbcType="VARCHAR"/>
+        <result column="attachpath" property="attachPath" jdbcType="VARCHAR"/>
+        <result column="attachsmallpath" property="attachSmallPath" jdbcType="VARCHAR"/>
+        <result column="attachtype" property="attachType" jdbcType="VARCHAR"/>
+        <result column="attachsuffix" property="attachSuffix" jdbcType="VARCHAR"/>
+        <result column="attachsize" property="attachSize" jdbcType="VARCHAR"/>
+        <result column="attachwh" property="attachWh" jdbcType="VARCHAR"/>
+        <result column="attachorigin" property="attachOrigin" jdbcType="INTEGER"/>
+        <result column="createtime" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="rawsize" property="rawSize" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <sql id="tb">t_attachment</sql>
+
+    <sql id="Base_Column_List">
+    id, attachname, attachpath, attachsmallpath, attachtype, attachsuffix, attachsize, attachwh, attachorigin, createtime, rawsize
+  </sql>
+
+
+    <!--删除附件-->
+    <delete id="deleteById" parameterType="Integer">
+        DELETE FROM
+        <include refid="tb"/>
+        WHERE id=#{value}
+    </delete>
+
+    <insert id="insert" parameterType="com.islizx.entity.Attachment" useGeneratedKeys="true" keyProperty="id">
+        insert into
+        <include refid="tb"/>
+        (attachname,attachpath,attachsmallpath,attachtype,attachsuffix,attachsize,attachwh,attachorigin,createtime, rawsize)
+        values (#{attachName,jdbcType=VARCHAR}, #{attachPath,jdbcType=VARCHAR}, #{attachSmallPath,jdbcType=VARCHAR},
+        #{attachType,jdbcType=VARCHAR}, #{attachSuffix,jdbcType=VARCHAR}, #{attachSize,jdbcType=VARCHAR},
+        #{attachWh,jdbcType=VARCHAR}, #{attachOrigin,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{rawSize,jdbcType=BIGINT})
+    </insert>
+
+
+    <update id="update" parameterType="com.islizx.entity.Attachment">
+        update
+        <include refid="tb"/>
+        <set>
+            <if test="id != null">id = #{id,jdbcType=INTEGER},</if>
+            <if test="attachName != null">attachname = #{attachName,jdbcType=VARCHAR},</if>
+            <if test="attachPath != null">attachpath = #{attachPath,jdbcType=VARCHAR},</if>
+            <if test="attachSmallPath != null">attachsmallpath = #{attachSmallPath,jdbcType=VARCHAR},</if>
+            <if test="attachType != null">attachtype = #{attachType,jdbcType=VARCHAR},</if>
+            <if test="attachSuffix != null">attachsuffix = #{attachSuffix,jdbcType=VARCHAR},</if>
+            <if test="attachSize != null">attachsize = #{attachSize,jdbcType=VARCHAR},</if>
+            <if test="attachWh != null">attachwh = #{attachWh,jdbcType=VARCHAR},</if>
+            <if test="attachOrigin != null">attachorigin = #{attachOrigin,jdbcType=INTEGER},</if>
+            <if test="createTime != null">createtime = #{createTime,jdbcType=TIMESTAMP},</if>
+            <if test="rawSize != null">rawsize = #{rawSize,jdbcType=BIGINT},</if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+        <where>
+            <if test="keywords != null">
+                attachname LIKE concat(concat('%',#{keywords}),'%') OR
+                attachtype LIKE concat(concat('%',#{keywords}),'%') OR
+                attachsuffix LIKE concat(concat('%',#{keywords}),'%') OR
+            </if>
+            1 = 1 order by createtime asc
+        </where>
+    </select>
+
+    <select id="listAttachment" resultType="com.islizx.entity.Attachment">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+        order by createtime asc
+    </select>
+
+    <select id="getAttachmentById" parameterType="Integer" resultType="com.islizx.entity.Attachment">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+        WHERE
+        id=#{id}
+    </select>
+
+    <select id="countAttachment" resultType="Integer">
+        SELECT COUNT(*)
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+    </select>
+
+    <select id="sumAttachmentSize" resultType="Long">
+        SELECT rawsize
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+    </select>
+
+
+</mapper>

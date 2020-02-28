@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="cn" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="utf-8">
+    <link type="image/x-icon" rel="shortcut icon" href="/images/islizx.jpg"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>isLizx | 所有用户</title>
+
+    <!--<link rel="stylesheet" href="https://www.jq22.com/jquery/bootstrap-3.3.4.css">
+    <link rel="stylesheet" href="https://www.jq22.com/jquery/font-awesome.4.6.0.css">-->
+    <link href="/css/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <!-- Toastr style -->
+    <link href="/css/plugins/toastr/toastr.min.css" rel="stylesheet">
+
+    <link href="/css/animate.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="/plugins/font/css/font-awesome.css">
+    <style type="text/css">
+        .draft, .publish, .trash, .checking {
+            list-style: none;
+            float: left;
+            margin: 0;
+            padding-bottom: 10px;
+        }
+
+        .blackcolor {
+            color: #000;
+        }
+
+        .hiddendiv{
+            display: none;
+        }
+
+        .showdiv{
+            display: block;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div id="wrapper">
+    <nav class="navbar-default navbar-static-side" role="navigation" th:replace="admin/_fragments :: menu(8, 1)"></nav>
+
+    <div id="page-wrapper" class="gray-bg">
+        <div class="row border-bottom" th:replace="admin/_fragments :: border-bottom"></div>
+        <div class="row wrapper border-bottom white-bg page-heading">
+            <div class="col-lg-10">
+                <h2>用户管理</h2>
+                <ol class="breadcrumb">
+                    <li>
+                        <a href="index.html" th:href="@{/admin}" th:text="首页">Home</a>
+                    </li>
+                    <li>
+                        <a>用户管理</a>
+                    </li>
+                    <li class="active">
+                        <strong>用户列表</strong>
+                    </li>
+                </ol>
+            </div>
+            <div class="col-lg-2">
+            </div>
+        </div>
+        <div class="wrapper wrapper-content  animated fadeInRight">
+            <div class="row" id="msgdiv">
+                <div class="col-lg-12">
+                    <div class="alert alert-info alert-dismissible fade in" role="alert" th:unless="${#strings.isEmpty(msg)}" >
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <strong th:text="${msg}">更新成功</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox">
+                        <div class="ibox-title">
+                            <h5>文章列表</h5>
+                        </div>
+                        <div class="ibox-content">
+                            <div id="table-container" th:fragment="userList">
+                                <div class="table-responsive">
+                                    <table class="table table-hover issue-tracker">
+                                        <thead>
+                                        <tr>
+                                            <th>id</th>
+                                            <th>用户名</th>
+                                            <th>昵称</th>
+                                            <th>邮箱</th>
+                                            <th>文章数</th>
+                                            <th>状态</th>
+                                            <th>注册时间</th>
+                                            <th class="col-md-2">操作</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="user : ${userList}">
+                                            <td th:text="${user.id}"></td>
+                                            <td th:text="${user.username}"></td>
+                                            <td th:text="${user.nickname}"></td>
+                                            <td th:text="${user.email}"></td>
+                                            <td>
+                                                <span class="badge" th:text="${user.blogCount}"></span>
+                                            </td>
+                                            <td th:text="${user.status?'禁用':'正常'}"></td>
+                                            <td th:text="${#dates.format(user.registerTime,'yyyy-MM-dd HH:mm:ss')}">
+                                            </td>
+                                            <td class="text-left">
+                                                <a class="btn btn-info btn-xs" th:href="@{/admin/users/input/}+${user.id}"> 编辑</a>
+                                                <a onclick="delUser(this)" th:attr="data-userId=${user.id}, data-username=${user.username}" class="btn btn-danger btn-xs"> 永久删除</a>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer" th:replace="admin/_fragments :: footer"></div>
+
+    </div>
+</div>
+
+
+<!-- Mainly scripts -->
+<script src="/js/jquery-2.1.1.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+
+<!-- Custom and plugin javascript -->
+<script src="/js/inspinia.js"></script>
+<script src="/js/plugins/pace/pace.min.js"></script>
+
+<!-- Peity -->
+<script src="/js/plugins/peity/jquery.peity.min.js"></script>
+
+<!-- Peity demo data -->
+<script src="/js/demo/peity-demo.js"></script>
+<script>
+
+        function loaddataByBlog() {
+            $("#table-container").load("[[@{/admin/usersByJson}]]", {
+            });
+        }
+
+
+        // 删除文章
+        function delUser(obj){
+            var delUsername = $(obj).data("username");
+            var delUserId = $(obj).data("userid");
+
+            if(confirm("确认要彻底删除:【" + delUsername + "】的用户吗?")){
+                // 发送ajax请求删除
+                $.ajax({
+                    url:"[[@{/admin/users/}]]" + delUserId,
+                    type:"DELETE",
+                    success:function (result) {
+                        var str = '<div class="col-lg-12"><div class="alert alert-info alert-dismissible fade in" role="alert">' +
+                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                            '<strong>' + result.extend.msg + '</strong></div></div>';
+                        $("#msgdiv").append(str);
+                        loaddataByBlog();
+                    }
+                });
+            }
+        }
+</script>
+</body>
+
+</html>

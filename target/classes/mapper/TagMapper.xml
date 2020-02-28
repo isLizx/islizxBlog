@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.islizx.mapper.TagMapper" >
+    <resultMap id="BaseResultMap" type="com.islizx.entity.Tag" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="description" property="description" jdbcType="VARCHAR" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+    id, name, description
+  </sql>
+
+    <sql id="tb">t_tag</sql>
+
+    <select id="getTagById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+        select
+        <include refid="Base_Column_List" />
+        from <include refid="tb"/>
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer" >
+        delete from <include refid="tb"/>
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" parameterType="com.islizx.entity.Tag" useGeneratedKeys="true" keyProperty="id">
+        insert into <include refid="tb"/>
+        (name, description)
+        values (#{name,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR})
+    </insert>
+
+
+    <update id="update" parameterType="com.islizx.entity.Tag" >
+        update <include refid="tb"/>
+        <set >
+            <if test="name != null" >
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null" >
+                description = #{description,jdbcType=VARCHAR}
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <!--获得标签列表-->
+    <select id="listTag"  resultType="com.islizx.entity.Tag" parameterType="INTEGER">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM <include refid="tb"/>
+        <if test="limit != null">
+            limit #{limit}
+        </if>
+    </select>
+
+    <!--获得标签总数-->
+    <select id="countTag" resultType="Integer">
+        SELECT COUNT(*) FROM <include refid="tb"/>
+    </select>
+
+    <!--根据标签名获取标签-->
+    <select id="getTagByName" parameterType="String" resultType="com.islizx.entity.Tag">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+        WHERE name=#{value}
+        limit 1
+    </select>
+</mapper>

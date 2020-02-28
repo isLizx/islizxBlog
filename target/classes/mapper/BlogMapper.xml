@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.islizx.mapper.BlogMapper">
+    <resultMap id="BaseResultMap" type="com.islizx.entity.Blog">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="user_id" property="userId" jdbcType="INTEGER"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="content" property="content" jdbcType="LONGVARCHAR"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="views" property="views" jdbcType="INTEGER"/>
+        <result column="comment_count" property="commentCount" jdbcType="INTEGER"/>
+        <result column="like_count" property="likeCount" jdbcType="INTEGER"/>
+        <result column="commentabled" property="commentabled" jdbcType="BIT"/>
+        <result column="createTime" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="updateTime" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="published" property="published" jdbcType="INTEGER"/>
+        <result column="appreciation" property="appreciation" jdbcType="BIT" />
+        <result column="firstPicture" property="firstPicture" jdbcType="VARCHAR" />
+        <result column="flag" property="flag" jdbcType="VARCHAR" />
+        <result column="recommend" property="recommend" jdbcType="BIT" />
+        <result column="shareStatement" property="shareStatement" jdbcType="BIT" />
+        <result column="type_id" property="typeId" jdbcType="INTEGER"/>
+        <result column="posttype" property="postType" jdbcType="INTEGER" />
+        <result column="url" property="url" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="tb">t_blog</sql>
+
+    <sql id="Base_Column_List">
+    id, user_id, title, content, description, views, comment_count, like_count, commentabled,
+    createTime, updateTime, published, appreciation, firstPicture, flag, recommend, shareStatement, type_id, posttype, url
+    </sql>
+
+
+    <select id="listAllNotWithContent" resultType="com.islizx.entity.Blog">
+        SELECT
+        id, user_id, title, createTime
+        FROM
+        <include refid="tb"/>
+        WHERE published = 0
+        ORDER BY id DESC
+    </select>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT
+        t_blog.*
+        FROM
+        t_blog
+        <where>
+            <if test="published != null">
+                t_blog.published = #{published} AND
+            </if>
+            <if test="title != null">
+                t_blog.title LIKE concat(concat('%',#{title}),'%') AND
+            </if>
+            <if test="content != null">
+                t_blog.content LIKE concat(concat('%',#{content}),'%') AND
+            </if>
+            <if test="flag != null">
+                t_blog.flag = #{flag} AND
+            </if>
+            <if test="userId != null">
+                t_blog.user_id = #{userId} AND
+            </if>
+            <if test="typeId != null">
+                t_blog.type_id = #{typeId} AND
+            </if>
+            <if test="postType != null">
+                t_blog.posttype = #{postType} AND
+            </if>
+            <if test="tagId != null">
+                t_blog.id IN (
+                SELECT t_blog_t_tag.blogs_id FROM t_blog_t_tag
+                WHERE t_blog_t_tag.tags_id = #{tagId}
+                ) AND
+            </if>
+            1 = 1
+        </where>
+        <if test="sort != null">
+            ORDER BY ${sort}
+        </if>
+        <if test="sort == null">
+            ORDER BY `t_blog`.`createTime`
+        </if>
+        <if test="order != null">
+            ${order}
+        </if>
+        <if test="order == null">
+            DESC
+        </if>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from
+        <include refid="tb"/>
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <delete id="deleteBatch" parameterType="list">
+        DELETE FROM
+        <include refid="tb"/>
+        <if test="ids != null">
+            WHERE id IN
+            <foreach collection="ids" open="(" close=")" separator="," item="id">
+                #{id}
+            </foreach>
+        </if>
+    </delete>
+
+    <insert id="insert" parameterType="com.islizx.entity.Blog" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into
+        <include refid="tb"/>
+        (id, user_id,
+        title, content,
+        description, views, comment_count,
+        like_count, commentabled, createTime,
+        updateTime, published, appreciation, firstPicture, flag, recommend, shareStatement, type_id, posttype, url)
+        values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER},
+        #{title,jdbcType=VARCHAR},
+        #{content,jdbcType=LONGVARCHAR},
+        #{description,jdbcType=VARCHAR}, #{views,jdbcType=INTEGER},
+        #{commentCount,jdbcType=INTEGER},
+        #{likeCount,jdbcType=INTEGER}, #{commentabled,jdbcType=BIT}, #{createTime,jdbcType=TIMESTAMP},
+        #{updateTime,jdbcType=TIMESTAMP}, #{published,jdbcType=INTEGER}, #{appreciation,jdbcType=BIT},
+        #{firstPicture,jdbcType=VARCHAR}, #{flag,jdbcType=VARCHAR}, #{recommend,jdbcType=BIT}, #{shareStatement,jdbcType=BIT},
+        #{typeId,jdbcType=INTEGER}, #{postType,jdbcType=INTEGER}, #{url,jdbcType=VARCHAR})
+    </insert>
+
+
+    <update id="update" parameterType="com.islizx.entity.Blog">
+        update
+        <include refid="tb"/>
+        <set>
+            <if test="userId != null">user_id = #{userId,jdbcType=INTEGER},</if>
+            <if test="title != null">title = #{title,jdbcType=VARCHAR},</if>
+            <if test="content != null">content = #{content,jdbcType=LONGVARCHAR},</if>
+            <if test="description != null">description = #{description,jdbcType=VARCHAR},</if>
+            <if test="views != null">views = #{views,jdbcType=INTEGER},</if>
+            <if test="commentCount != null">comment_count = #{commentCount,jdbcType=INTEGER},</if>
+            <if test="likeCount != null">like_count = #{likeCount,jdbcType=INTEGER},</if>
+            <if test="commentabled != null">commentabled = #{commentabled,jdbcType=BIT},</if>
+            <if test="createTime != null">createTime = #{createTime,jdbcType=TIMESTAMP},</if>
+            <if test="updateTime != null">updateTime = #{updateTime,jdbcType=TIMESTAMP},</if>
+            <if test="published != null">published = #{published,jdbcType=INTEGER},</if>
+            <if test="appreciation != null">appreciation = #{appreciation,jdbcType=BIT},</if>
+            <if test="firstPicture != null">firstPicture = #{firstPicture,jdbcType=VARCHAR},</if>
+            <if test="flag != null">flag = #{flag,jdbcType=VARCHAR},</if>
+            <if test="recommend != null">recommend = #{recommend,jdbcType=BIT},</if>
+            <if test="shareStatement != null">shareStatement = #{shareStatement,jdbcType=BIT},</if>
+            <if test="typeId != null">type_id = #{typeId,jdbcType=INTEGER},</if>
+            <if test="postType != null">posttype = #{postType,jdbcType=INTEGER},</if>
+            <if test="url != null">url = #{url,jdbcType=VARCHAR},</if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <!--获取文章总数-->
+    <select id="countBlog" resultType="Integer">
+        SELECT COUNT(*) FROM
+        <include refid="tb"/>
+        <where>
+            <if test="published!=null">
+                published = #{published} AND
+            </if>
+            <if test="postType!=null">
+                posttype = #{postType} AND
+            </if>
+            1 = 1
+        </where>
+    </select>
+
+    <!--获得所有文章留言总数-->
+    <select id="countBlogComment" resultType="Integer">
+        SELECT SUM(comment_count)
+        FROM
+        <include refid="tb"/>
+        WHERE published = 0 AND posttype = 0
+    </select>
+
+
+    <!--统计文章总访问量-->
+    <select id="countBlogView" resultType="Integer">
+        SELECT SUM(views) FROM
+        <include refid="tb"/>
+        WHERE published = 0 AND posttype = 0
+    </select>
+
+    <!--获得所有文章-->
+    <select id="listBlog" resultType="com.islizx.entity.Blog">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+        WHERE published = 0 AND posttype = 0
+        ORDER BY createTime DESC, id DESC
+    </select>
+
+    <select id="getBlogByPublishedAndId" resultType="com.islizx.entity.Blog">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+        <where>
+            <if test="published != null">
+                published = #{published} AND
+            </if>
+            <if test="postType != null">
+                posttype = #{postType} AND
+            </if>
+            id = #{id}
+        </where>
+    </select>
+
+    <!--通过分页查询文章-->
+    <select id="pageBlog" resultType="com.islizx.entity.Blog">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+        <where>
+            <if test="published!=null">
+                published=#{published} AND posttype = 0
+            </if>
+        </where>
+        ORDER BY createTime DESC, id DESC
+        limit #{pageIndex},#{pageSize}
+    </select>
+
+    <!--获得访问量较多的文章-->
+    <select id="listBlogByViewCount" resultType="com.islizx.entity.Blog">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+        WHERE published = 0 AND posttype = 0
+        ORDER BY views DESC, id DESC
+        limit #{limit}
+
+    </select>
+
+
+    <!--获得下一篇的文章-->
+    <select id="getAfterBlog" resultType="com.islizx.entity.Blog">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+        <where>
+            updateTime &lt; (
+            select updateTime from t_blog where id = #{id}
+            )
+             <if test="published != null">
+                 AND published = #{published}
+             </if>
+            <if test="postType != null">
+                AND posttype = #{postType}
+            </if>
+        </where>
+        ORDER BY updateTime DESC
+        limit 1
+    </select>
+    <!--获得上一篇的文章-->
+    <select id="getPreBlog" resultType="com.islizx.entity.Blog">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+        <where>
+            updateTime > (
+            select updateTime from t_blog where id = #{id}
+            )
+            <if test="published != null">
+                AND published = #{published}
+            </if>
+            <if test="postType != null">
+                AND posttype = #{postType}
+            </if>
+        </where>
+        ORDER BY updateTime DESC
+        limit 1
+    </select>
+
+    <!--获得随机文章-->
+    <select id="listRandomBlog" resultType="com.islizx.entity.Blog">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+        WHERE published = 0 AND posttype = 0
+        ORDER BY
+        RAND()
+        limit #{limit}
+    </select>
+
+    <!--获得评论数较多的文章列表-->
+    <select id="listBlogByCommentCount" resultType="com.islizx.entity.Blog">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+        WHERE published = 0 AND posttype = 0
+        ORDER BY
+        comment_count DESC,createTime DESC, id DESC
+        limit #{limit}
+    </select>
+
+    <update id="updateCommentCount" parameterType="Integer">
+        UPDATE
+        <include refid="tb"/>
+        SET comment_count =
+        (
+        SELECT count(*) FROM `t_comment`
+        WHERE t_blog.id=t_comment.blog_id AND t_comment.pass = 1
+        )
+        WHERE id=#{id}
+    </update>
+
+    <!--获得最后更新的记录-->
+    <select id="getLastUpdateBlog" resultType="com.islizx.entity.Blog">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+        WHERE
+        published = 0 AND posttype = 0 AND updateTime=
+        (
+        SELECT max(updateTime) FROM t_blog
+        )
+    </select>
+
+    <select id="countBlogByUser" parameterType="Integer" resultType="Integer">
+        SELECT COUNT(*)
+        FROM
+        <include refid="tb"/>
+        WHERE user_id=#{id} AND published = 0 AND posttype = 0
+    </select>
+
+    <select id="findBlogByTypeId" resultType="com.islizx.entity.Blog">
+        SELECT
+        t_blog.id, t_blog.user_id, t_blog.title,
+        t_blog.content, t_blog.description,
+        t_blog.views, t_blog.comment_count, t_blog.like_count,
+        t_blog.commentabled, t_blog.createTime, t_blog.updateTime,
+        t_blog.published, t_blog.appreciation, t_blog.firstPicture, t_blog.flag,
+        t_blog.recommend, t_blog.shareStatement, t_blog.type_id, t_blog.posttype, t_blog.url
+        FROM t_blog, t_type
+        WHERE
+        t_blog.published = 0 AND
+        t_blog.id = t_type.id AND
+        t_type.id = #{id} AND
+        t_blog.posttype = 0
+        LIMIT #{limit}
+    </select>
+
+    <!--<select id="findBlogByTypeIds" resultType="com.islizx.entity.Blog">
+        SELECT
+        t_blog.id, t_blog.user_id, t_blog.title,
+        t_blog.content, t_blog.description,
+        t_blog.views, t_blog.comment_count, t_blog.like_count,
+        t_blog.commentabled, t_blog.createTime, t_blog.updateTime,
+        t_blog.published, t_blog.appreciation, t_blog.firstPicture, t_blog.flag,
+        t_blog.recommend, t_blog.shareStatement, t_blog.type_id,
+        FROM t_blog, t_blog_t_tag
+        <where>
+            t_blog.published = true AND
+            t_blog.id = t_blog_t_tag.blogs_id AND
+            t_blog_t_tag.tags_id
+            <if test="tagIds != null">
+                IN
+                <foreach collection="tagIds" open="(" close=")" separator="," item="id">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+        LIMIT #{limit}
+    </select>-->
+
+
+    <select id="listBlogByLimit" resultType="com.islizx.entity.Blog">
+        SELECT
+        id, user_id, title, views, comment_count, like_count,
+        createTime, updateTime, commentabled, published
+        FROM
+        <include refid="tb"/>
+        WHERE posttype = 0
+        ORDER BY id DESC
+        LIMIT #{value}
+    </select>
+
+    <select id="countBlogByTypeId" parameterType="Integer" resultType="Integer">
+        SELECT COUNT(*)
+        FROM
+        <include refid="tb"/>
+        WHERE type_id=#{id} AND published = 0 AND posttype = 0
+    </select>
+
+    <!-- 批量查询 -->
+    <select id="selectByIds" parameterType="java.util.List"
+            resultType="com.islizx.entity.Blog">
+        SELECT t_blog.*
+        FROM t_blog
+        WHERE id in
+        <trim prefix="(" suffix=")">
+            <foreach collection="ids" index="index" item="id" separator=",">
+                #{id}
+            </foreach>
+        </trim>
+    </select>
+
+    <!-- 批量查询 -->
+    <select id="getBlogByUrl" parameterType="Integer"
+            resultType="com.islizx.entity.Blog">
+        SELECT t_blog.*
+        FROM t_blog
+        <where>
+            <if test="url != null">
+                url = #{url} AND
+            </if>
+            <if test="postType != null">
+                posttype = #{postType} AND
+            </if>
+            1 = 1
+        </where>
+        limit 1
+    </select>
+
+    <update id="incrBlogViews">
+        UPDATE
+        <include refid="tb"/>
+        SET views = views + 1
+        WHERE
+            id = #{id}
+    </update>
+
+    <update id="incrBlogLikes">
+        UPDATE
+        <include refid="tb"/>
+        SET like_count = like_count + 1
+        WHERE
+        id = #{id}
+    </update>
+
+
+    <select id="findGroupYear" resultType="String">
+        select DATE_FORMAT(b.updateTime,'%Y') as year from t_blog b where posttype = 0 and published = 0 group by DATE_FORMAT(b.updateTime,'%Y') order by year desc
+    </select>
+
+    <select id="findByYear" parameterType="String" resultType="com.islizx.entity.Blog">
+        select * from t_blog b where DATE_FORMAT(b.updateTime,'%Y') = #{year} and posttype = 0 and published = 0
+    </select>
+</mapper>

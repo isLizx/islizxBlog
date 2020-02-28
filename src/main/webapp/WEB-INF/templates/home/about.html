@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="cn" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="home/_fragments :: head(~{::title})">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关于我 | isLizx</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
+    <link rel="stylesheet" href="../static/css/me.css">
+</head>
+<body>
+
+<!--导航-->
+<nav th:replace="home/_fragments :: menu(5)" class="ui inverted attached segment m-padded-tb-mini m-shadow-small"></nav>
+
+<!--中间内容-->
+<div class="m-container m-padded-tb-big animated fadeIn" style="margin-bottom: 100px!important;">
+    <div class="ui container">
+
+        <div class="ui stackable grid">
+            <div class="eleven wide column">
+                <div class="ui top attached segment">
+                    <div class="ui header">
+                      <span>友情链接</span>
+                      <span style="float: right"><a th:href="@{/p/apply-links}">申请友链</a></span>
+                    </div>
+                </div>
+                <div class="ui attached segment" style="padding: 40px 30px 60px 30px;">
+                  <div class="ui three doubling cards">
+                    <div class="card" th:each="link : ${linkList}">
+                      <a class="image" th:href="${link.linkUrl}" target="_blank">
+                        <img th:src="@{${link.linkPic}}">
+                      </a>
+                      <div class="content">
+                        <a class="header" th:href="${link.linkUrl}" th:text="${link.linkName}" target="_blank">Elliot Fu</a>
+                        <div class="meta">
+                          <span th:text="${#dates.format(link.linkCreateTime,'yyyy-MM-dd') + '加入'}">Friends</span>
+                        </div>
+                        <div class="description" th:text="'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+${link.linkDesc}">
+                          Elliot Fu is a film-maker from New York.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div class="five wide column">
+                <div class="ui top attached segment">
+                    <div class="ui header">关于我</div>
+                </div>
+                <div class="ui attached segment">
+                    <p class="m-text">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RAYMOND,一个目前在读专科生,专业为软件技术.搭建个人博客最主要分享日常生活的点点滴滴及学习上的知识及出现的问题.
+                        希望结识可以共同成长的小伙伴.网站内容不定期更新,欢迎大家关注,共同交流进步.</p>
+                    <p class="m-text">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;热爱编程,喜欢折腾,正在探索高效学习编程技术的方法...</p>
+                </div>
+                <div class="ui attached segment">
+                    <div class="ui orange basic left pointing label">编程</div>
+                    <div class="ui orange basic left pointing label">写作</div>
+                    <div class="ui orange basic left pointing label">思考</div>
+                    <div class="ui orange basic left pointing label">运动</div>
+                </div>
+                <div class="ui attached segment">
+                    <div class="ui teal basic left pointing label m-margin-tb-tiny">Java</div>
+                    <div class="ui teal basic left pointing label m-margin-tb-tiny">99后</div>
+                    <div class="ui teal basic left pointing label m-margin-tb-tiny">JavaScript</div>
+                    <div class="ui teal basic left pointing label m-margin-tb-tiny">Spring</div>
+                    <div class="ui teal basic left pointing label m-margin-tb-tiny">MYSQL</div>
+                    <div class="ui teal basic left pointing label m-margin-tb-tiny">...</div>
+                </div>
+                <!--赞赏-->
+                <div class="ui attached segment">
+                    <div class="ui center aligned basic segment">
+                        <button id="payButton" class="ui orange basic circular button">赞赏</button>
+                    </div>
+                    <div class="ui payQR flowing popup transition hidden">
+                        <div class="ui orange basic label">
+                            <div class="ui images" style="font-size: inherit !important; width: 300px!important;">
+                                <div class="image">
+                                    <img src="../static/images/wechat.jpg" th:src="@{/images/alipay.jpg}" alt=""
+                                         class="ui rounded bordered image" style="width: 120px">
+                                    <div>支付宝</div>
+                                </div>
+                                <div class="image">
+                                    <img src="../static/images/wechat.jpg" th:src="@{/images/wechatpay.png}" alt=""
+                                         class="ui rounded bordered image" style="width: 120px">
+                                    <div>微信</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ui bottom attached segment">
+                    <a href="https://github.com/isLizx" target="_blank" class="ui circular icon button"><i
+                            class="github icon"></i></a>
+                    <a class="ui wechat circular icon button"><i class="wechat icon"></i></a>
+                    <a href="https://weibo.com/5403112140/profile" target="_blank"
+                       class="ui weibo circular icon button"><i
+                            class="weibo icon"></i></a>
+                    <a class="ui qq circular icon button" data-content="3022823354"
+                       data-position="bottom center"><i class="qq icon"></i></a>
+                </div>
+                <div class="ui wechat-qr flowing popup transition hidden">
+                    <img th:src="@{/images/wechat.jpg}" alt="" class="ui rounded image" style="width: 110px">
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<br>
+<br>
+<!--底部footer-->
+<footer th:replace="home/_fragments :: footer" class="ui inverted vertical segment m-padded-tb-massive"></footer>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+<script th:replace="home/_fragments :: header-footer-script(5)"></script>
+
+<script>
+    $('#payButton').popup({
+        popup: $('.payQR.popup'),
+        on: 'click',
+        position: 'bottom center'
+    });
+    $('.wechat').popup({
+        popup: $('.wechat-qr'),
+        position: 'bottom center'
+    });
+    $('.qq').popup();
+
+</script>
+</body>
+</html>

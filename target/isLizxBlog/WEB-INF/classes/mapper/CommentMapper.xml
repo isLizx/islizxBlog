@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.islizx.mapper.CommentMapper">
+    <resultMap id="BaseResultMap" type="com.islizx.entity.Comment">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="avatar" property="avatar" jdbcType="VARCHAR"/>
+        <result column="content" property="content" jdbcType="VARCHAR"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="nickname" property="nickname" jdbcType="VARCHAR"/>
+        <result column="blog_id" property="blogId" jdbcType="INTEGER"/>
+        <result column="ip" property="ip" jdbcType="VARCHAR"/>
+        <result column="pass" property="pass" jdbcType="INTEGER"/>
+        <result column="admin_comment" property="adminComment" jdbcType="BIT"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="parent_comment_id" property="parentCommentId" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="tb">t_comment</sql>
+
+    <sql id="Base_Column_List">
+    id, avatar, content, email, nickname, blog_id, ip, pass, admin_comment, create_time, parent_comment_id
+  </sql>
+
+    <select id="findAll" resultType="com.islizx.entity.Comment">
+        SELECT
+        t_comment.*
+        FROM
+        t_comment
+        <where>
+            <if test="content != null">
+                t_comment.content LIKE concat(concat('%',#{content}),'%') AND
+            </if>
+            <if test="nickname != null">
+                t_comment.nickname LIKE concat(concat('%',#{nickname}),'%') AND
+            </if>
+            <if test="email != null">
+                t_comment.email LIKE concat(concat('%',#{email}),'%') AND
+            </if>
+            <if test="ip != null">
+                t_comment.ip LIKE concat(concat('%',#{ip}),'%') AND
+            </if>
+            <if test="pass != null">
+                t_comment.pass = #{pass} AND
+            </if>
+            1 = 1
+        </where>
+        <if test="sort != null">
+            ORDER BY ${sort}
+        </if>
+        <if test="sort == null">
+            ORDER BY `t_comment`.`create_time`
+        </if>
+        <if test="order != null">
+            ${order}
+        </if>
+        <if test="order == null">
+            DESC
+        </if>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from
+        <include refid="tb"/>
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <select id="countComment" resultType="Integer">
+        SELECT COUNT(*) FROM
+        <include refid="tb"/>
+        WHERE pass = #{pass}
+    </select>
+
+    <insert id="insertComment" parameterType="com.islizx.entity.Comment" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into
+        <include refid="tb"/>
+        (id, avatar,
+        content, email,
+        nickname, blog_id, ip,
+        pass, admin_comment, create_time,
+        parent_comment_id)
+        values (#{id,jdbcType=INTEGER}, #{avatar,jdbcType=VARCHAR},
+        #{content,jdbcType=VARCHAR},
+        #{email,jdbcType=VARCHAR},
+        #{nickname,jdbcType=VARCHAR}, #{blogId,jdbcType=INTEGER},
+        #{ip,jdbcType=VARCHAR},
+        #{pass,jdbcType=INTEGER}, #{adminComment,jdbcType=BIT}, #{createTime,jdbcType=TIMESTAMP},
+        #{parentCommentId,jdbcType=INTEGER})
+    </insert>
+
+    <select id="findLatestCommentByLimit" resultType="com.islizx.entity.Comment">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+        ORDER BY create_time DESC
+        limit #{limit}
+    </select>
+
+    <select id="findByBlogIdAndParentCommentNull" parameterType="Integer" resultType="com.islizx.entity.Comment">
+        SELECT t_comment.*
+        FROM
+        t_comment
+        WHERE
+        t_comment.parent_comment_id = -1 AND
+        t_comment.blog_id = #{blogId} AND
+        t_comment.pass = 1
+        ORDER BY t_comment.create_time DESC
+    </select>
+
+    <select id="findByBlogId" parameterType="Integer" resultType="com.islizx.entity.Comment">
+        SELECT t_comment.*
+        FROM
+        t_comment
+        WHERE
+        t_comment.blog_id = #{blogId} AND
+        t_comment.pass = 1
+    </select>
+
+    <update id="updateCommentPass" parameterType="Integer">
+        UPDATE
+        <include refid="tb"/>
+        SET pass = #{pass}
+        WHERE id=#{id}
+    </update>
+
+    <select id="getById" parameterType="Integer" resultType="com.islizx.entity.Comment">
+        SELECT t_comment.*
+        FROM
+        t_comment
+        WHERE
+        <if test="commentPublished != null">
+            pass = #{commentPublished} AND
+        </if>
+        t_comment.id = #{id}
+    </select>
+
+    <select id="selectChildCommentIds" parameterType="Integer" resultType="Integer">
+        SELECT t_comment.id
+        FROM
+        t_comment
+        WHERE
+        t_comment.parent_comment_id = #{id}
+    </select>
+
+    <select id="selectByIds" parameterType="java.util.List"
+            resultType="com.islizx.entity.Comment">
+        SELECT t_comment.*
+        FROM t_comment
+        WHERE id in
+        <trim prefix="(" suffix=")">
+            <foreach collection="ids" index="index" item="id" separator=",">
+                #{id}
+            </foreach>
+        </trim>
+    </select>
+
+</mapper>

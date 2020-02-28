@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="cn" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="utf-8">
+    <link type="image/x-icon" rel="shortcut icon" href="/images/islizx.jpg"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>isLizx | 所有公告</title>
+
+    <!--<link rel="stylesheet" href="https://www.jq22.com/jquery/bootstrap-3.3.4.css">
+    <link rel="stylesheet" href="https://www.jq22.com/jquery/font-awesome.4.6.0.css">-->
+    <link href="/css/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <!-- Toastr style -->
+    <link href="/css/plugins/toastr/toastr.min.css" rel="stylesheet">
+
+    <link href="/css/animate.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="/plugins/font/css/font-awesome.css">
+    <style type="text/css">
+        .draft, .publish, .trash, .checking {
+            list-style: none;
+            float: left;
+            margin: 0;
+            padding-bottom: 10px;
+        }
+
+        .blackcolor {
+            color: #000;
+        }
+
+        .hiddendiv{
+            display: none;
+        }
+
+        .showdiv{
+            display: block;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div id="wrapper">
+    <nav class="navbar-default navbar-static-side" role="navigation" th:replace="admin/_fragments :: menu(4, 1)"></nav>
+
+    <div id="page-wrapper" class="gray-bg">
+        <div class="row border-bottom" th:replace="admin/_fragments :: border-bottom"></div>
+        <div class="row wrapper border-bottom white-bg page-heading">
+            <div class="col-lg-10">
+                <h2>公告管理</h2>
+                <ol class="breadcrumb">
+                    <li>
+                        <a href="index.html" th:href="@{/admin}" th:text="首页">Home</a>
+                    </li>
+                    <li>
+                        <a>公告</a>
+                    </li>
+                    <li class="active">
+                        <strong>所有公告</strong>
+                    </li>
+                </ol>
+            </div>
+            <div class="col-lg-2">
+            </div>
+        </div>
+        <div class="wrapper wrapper-content  animated fadeInRight">
+            <input type="hidden" name="pageIndex">
+            <input type="hidden" name="published" th:value="${published}">
+            <div class="row" id="msgdiv">
+                <div class="col-lg-12">
+                    <div class="alert alert-info alert-dismissible fade in" role="alert" th:unless="${#strings.isEmpty(msg)}" >
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <strong th:text="${msg}">更新成功</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox">
+                        <div class="ibox-title">
+                            <h5>文章列表</h5>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <ul style="list-style: none;padding-left: 0;vertical-align: center;">
+                                        <li class="publish"><a href="/admin/notices?published=0"
+                                                               th:class="${published == 0?'blackcolor':''}">已发布&nbsp;<span>([[${publish}]])</span></a>&nbsp;|&nbsp;
+                                        </li>
+                                        <li class="draft"><a href="/admin/notices?published=1"
+                                                             th:class="${published == 1?'blackcolor':''}">草稿&nbsp;<span>([[${draft}]])</span></a>&nbsp;|&nbsp;
+                                        </li>
+                                        <li class="trash"><a href="/admin/notices?published=2"
+                                                             th:class="${published == 2?'blackcolor':''}">回收站&nbsp;<span>([[${trash}]])</span></a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div id="table-container" th:fragment="noticeList">
+                                <div class="table-responsive">
+                                    <table class="table table-hover issue-tracker">
+                                        <thead>
+                                        <tr>
+                                            <th class="col-md-6">标题</th>
+                                            <th>评论</th>
+                                            <th>访问量</th>
+                                            <th>日期</th>
+                                            <th class="col-md-2">操作</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="notice : ${pageInfo.list}">
+                                            <td class="issue-info">
+                                                <a href="#" th:text="${notice.title}">
+                                                    ISSUE-23
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <span class="badge" th:text="${notice.commentCount}">3</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge" th:text="${notice.views}">3</span>
+                                            </td>
+                                            <td th:text="${#dates.format(notice.createTime,'yyyy-MM-dd HH:mm:ss')}">
+                                            </td>
+                                            <td class="text-left">
+                                                <a class="btn btn-primary btn-xs" th:unless="${published == 2 || published == 1}" target="_blank" th:href="@{/notice/} + ${notice.id}"> 查看</a>
+                                                <a class="btn btn-info btn-xs" th:unless="${published == 2}" th:href="@{/admin/notices/input/}+${notice.id}"> 编辑</a>
+                                                <a class="btn btn-info btn-xs" th:if="${published == 2 || published == 1}" onclick="revertIt(this)" th:attr="data-noticeId=${notice.id}, data-noticeTitle=${notice.title}" > 发布</a>
+                                                <a onclick="delNotice(this)" th:attr="data-noticeId=${notice.id}, data-noticeTitle=${notice.title}" th:text="${published == 2?'永久删除':'丢弃'}" class="btn btn-danger btn-xs"> 丢弃</a>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="row">
+                                    <div class="row" style="text-align: center">
+                                        <nav th:replace="admin/_fragments :: paginaction"></nav>
+                                    </div>
+                                    <div class="row" style="line-height: 73px; text-align: center">
+                                        <span th:text="'当前第 ' + ${pageInfo.pageNum} + ' 页,总共 ' + ${pageInfo.pages} + ' 页,总记录数' + ${pageInfo.total}">共</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer" th:replace="admin/_fragments :: footer"></div>
+
+    </div>
+</div>
+
+
+<!-- Mainly scripts -->
+<script src="/js/jquery-2.1.1.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+
+<!-- Custom and plugin javascript -->
+<script src="/js/inspinia.js"></script>
+<script src="/js/plugins/pace/pace.min.js"></script>
+
+<!-- Peity -->
+<script src="/js/plugins/peity/jquery.peity.min.js"></script>
+
+<!-- Peity demo data -->
+<script src="/js/demo/peity-demo.js"></script>
+<script>
+        function page(obj) {
+            $("[name='pageIndex']").val($(obj).data("page"));
+            loaddataByNotice();
+            return false;
+        }
+
+
+        function loaddataByNotice() {
+            $("#table-container").load("[[@{/admin/noticesByJson}]]", {
+                pageIndex: $("[name='pageIndex']").val(),
+                published: $("[name='published']").val()
+            });
+            $.ajax({
+                url: "[[@{/admin/notices/getpublishedsize/}]]",
+                success:function (result) {
+                    $(".publish").find("a").find("span").text("(" + result.extend.publish + ")");
+                    $(".draft").find("a").find("span").text("(" + result.extend.draft + ")");
+                    $(".trash").find("a").find("span").text("(" + result.extend.trash + ")");
+                }
+            });
+        }
+        // 发布公告
+        function revertIt(obj){
+            var reNoticeTitle = $(obj).data("noticetitle");
+            var reNoticeId = $(obj).data("noticeid");
+            if(confirm("确认要发布:【" + reNoticeTitle + "】公告吗?")){
+                // 发送ajax请求发布
+                $.ajax({
+                    url: "[[@{/admin/notices/revert/}]]" + reNoticeId,
+                    success:function (result) {
+                        var str = '<div class="col-lg-12"><div class="alert alert-info alert-dismissible fade in" role="alert">' +
+                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                            '<strong>' + result.extend.msg + '</strong></div></div>';
+                        $("#msgdiv").append(str);
+                        loaddataByNotice();
+                    }
+                });
+            }
+        }
+
+        // 删除或丢入回收站
+        function delNotice(obj){
+            var delNoticeTitle = $(obj).data("noticetitle");
+            var delNoticeId = $(obj).data("noticeid");
+            var published = $("[name='published']").val();
+            var flag = false;
+            var url = '';
+            if(published == '2'){
+                flag = confirm("确认要彻底删除:【" + delNoticeTitle + "】公告吗?");
+                url = "[[@{/admin/notices/delete/}]]" + delNoticeId;
+            }else if(published == '1' || published == '0'){
+                flag = confirm("确认要将:【" + delNoticeTitle + "】公告丢入回收站吗?");
+                url = "[[@{/admin/notices/throw/}]]" + delNoticeId;
+            }
+
+            if(flag){
+                // 发送ajax请求删除
+                $.ajax({
+                    url: url,
+                    success:function (result) {
+                        var str = '<div class="col-lg-12"><div class="alert alert-info alert-dismissible fade in" role="alert">' +
+                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                            '<strong>' + result.extend.msg + '</strong></div></div>';
+                        $("#msgdiv").append(str);
+                        loaddataByNotice();
+                    }
+                });
+            }
+        }
+</script>
+</body>
+
+</html>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.islizx.mapper.LogMapper">
+    <resultMap id="BaseResultMap" type="com.islizx.entity.Log">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="logtype" property="logType" jdbcType="VARCHAR"/>
+        <result column="requesturl" property="requestUrl" jdbcType="VARCHAR"/>
+        <result column="requesttype" property="requestType" jdbcType="VARCHAR"/>
+        <result column="requestparam" property="requestParam" jdbcType="VARCHAR"/>
+        <result column="username" property="username" jdbcType="VARCHAR"/>
+        <result column="ipinfo" property="ipInfo" jdbcType="VARCHAR"/>
+        <result column="costtime" property="costTime" jdbcType="INTEGER"/>
+        <result column="ip" property="ip" jdbcType="VARCHAR"/>
+        <result column="createtime" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="tb">t_log</sql>
+
+    <sql id="Base_Column_List">
+    id, name, logtype, requesturl, requesttype, requestparam, username, ipinfo, costtime, ip, createtime
+  </sql>
+
+
+    <insert id="insert" parameterType="com.islizx.entity.Log" useGeneratedKeys="true" keyProperty="id">
+        insert into
+        <include refid="tb"/>
+        (name,logtype,requesturl,requesttype,requestparam,username,ipinfo,costtime,ip,createtime)
+        values (#{name,jdbcType=VARCHAR}, #{logType,jdbcType=VARCHAR}, #{requestUrl,jdbcType=VARCHAR}
+        , #{requestType,jdbcType=VARCHAR}, #{requestParam,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, #{ipInfo,jdbcType=VARCHAR}
+        , #{costTime,jdbcType=INTEGER}, #{ip,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP})
+    </insert>
+
+
+    <update id="update" parameterType="com.islizx.entity.Log">
+        update
+        <include refid="tb"/>
+        <set>
+            <if test="id != null">id = #{id,jdbcType=INTEGER},</if>
+            <if test="name != null">name = #{name,jdbcType=VARCHAR},</if>
+            <if test="logType != null">logtype = #{logType,jdbcType=VARCHAR},</if>
+            <if test="requestUrl != null">requesturl = #{requestUrl,jdbcType=VARCHAR},</if>
+            <if test="requestType != null">requesttype = #{requestType,jdbcType=VARCHAR},</if>
+            <if test="requestParam != null">requestparam = #{requestParam,jdbcType=VARCHAR},</if>
+            <if test="username != null">username = #{username,jdbcType=VARCHAR},</if>
+            <if test="ipInfo != null">ipinfo = #{ipInfo,jdbcType=VARCHAR},</if>
+            <if test="costTime != null">costtime = #{costTime,jdbcType=INTEGER},</if>
+            <if test="ip != null">ip = #{ip,jdbcType=VARCHAR},</if>
+            <if test="createtime != null">createTime = #{createtime,jdbcType=TIMESTAMP},</if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+
+    <select id="getById" parameterType="Integer" resultType="com.islizx.entity.Log">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+        WHERE
+        id=#{value}
+    </select>
+
+    <select id="getAll" resultType="com.islizx.entity.Log">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+        ORDER BY createtime DESC
+    </select>
+
+    <delete id="deleteAll">
+        DELETE FROM
+        <include refid="tb"/>
+    </delete>
+
+
+    <!--删除-->
+    <delete id="delete" parameterType="Integer">
+        DELETE FROM
+        <include refid="tb"/>
+        WHERE id=#{value}
+    </delete>
+
+    <!-- 批量查询 -->
+    <select id="selectByIds" parameterType="java.util.List"
+            resultType="com.islizx.entity.Log">
+        SELECT t_log.*
+        FROM t_log
+        WHERE id in
+        <trim prefix="(" suffix=")">
+            <foreach collection="ids" index="index" item="id" separator=",">
+                #{id}
+            </foreach>
+        </trim>
+    </select>
+
+</mapper>

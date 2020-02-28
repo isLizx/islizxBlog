@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+
+
+    <context:component-scan base-package="com.islizx"></context:component-scan>
+    <!-- 一个配置节解决映射器和适配器的配置注解配置 -->
+    <mvc:annotation-driven></mvc:annotation-driven>
+
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+
+    <!-- 配置视图解析器 -->
+    <bean id="templateResolver" class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
+        <property name="prefix" value="/WEB-INF/templates/"/>
+        <property name="suffix" value=".html"/>
+        <property name="characterEncoding" value="UTF-8"/>
+        <property name="order" value="1"/>
+        <property name="templateMode" value="HTML5"/>
+        <property name="cacheable" value="false"/>
+    </bean>
+    <bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
+        <property name="templateResolver" ref="templateResolver"/>
+    </bean>
+    <bean id="viewResolver" class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+        <property name="templateEngine" ref="templateEngine"/>
+        <property name="characterEncoding" value="UTF-8"/>
+    </bean>
+
+    <!--&lt;!&ndash;文件上传&ndash;&gt;-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!--设置上传最大尺寸为50MB-->
+        <property name="maxUploadSizePerFile" value="52428800"/>
+        <property name="defaultEncoding" value="UTF-8"/>
+        <property name="resolveLazily" value="true"/>
+    </bean>
+
+    <bean id="trigger" class="com.islizx.service.impl.TriggerImpl"></bean>
+    <!-- 定义调用对象和调用对象的方法 -->
+    <bean id="projobtask2" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject">
+            <ref bean="trigger"/>
+        </property>
+        <property name="targetMethod">
+            <value>BackMySQL</value>
+        </property>
+    </bean>
+    <!--定义触发时间  -->
+    <bean id="timecard2" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail">
+            <ref bean="projobtask2"/>
+        </property>
+        <!-- cron表达式 -->
+        <property name="cronExpression">
+            <!-- 每隔30分钟备份一次-->
+            <value>0 15 10 ? * MON</value>
+        </property>
+    </bean>
+    <!-- 总管理类 如果将lazy-init='false'那么容器启动就会执行调度程序 -->
+    <bean id="startQuertz2" lazy-init="false" autowire="no" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="timecard2"/>
+            </list>
+        </property>
+    </bean>
+
+
+    <!-- 静态资源映射 -->
+    <mvc:resources mapping="/css/**" location="static/css/"></mvc:resources>
+    <mvc:resources mapping="/img/**" location="static/img/"></mvc:resources>
+    <mvc:resources mapping="/images/**" location="static/images/"></mvc:resources>
+    <mvc:resources mapping="/js/**" location="static/js/"></mvc:resources>
+    <mvc:resources mapping="/lib/**" location="static/lib/"></mvc:resources>
+    <mvc:resources mapping="/upload/**" location="static/upload/"></mvc:resources>
+    <mvc:resources mapping="/plugins/**" location="static/plugins/"></mvc:resources>
+
+    <mvc:interceptors>
+        <!--<mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <bean class="com.liuyanzhao.ssm.blog.interceptor.HomeResourceInterceptor"/>
+        </mvc:interceptor>-->
+        <mvc:interceptor>
+            <mvc:mapping path="/admin"/>
+            <bean class="com.islizx.interceptor.SecurityInterceptor"/>
+        </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/admin/**"/>
+            <bean class="com.islizx.interceptor.SecurityInterceptor"/>
+        </mvc:interceptor>
+
+    </mvc:interceptors>
+</beans>

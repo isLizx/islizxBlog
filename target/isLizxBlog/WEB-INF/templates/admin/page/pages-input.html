@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="cn" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="utf-8">
+    <link type="image/x-icon" rel="shortcut icon" href="/images/islizx.jpg"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>isLizx | 编辑页面</title>
+    <link href="/css/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <!-- Toastr style -->
+    <link href="/css/plugins/toastr/toastr.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="/plugins/editor/css/editormd.css">
+
+
+    <link href="/css/animate.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="/plugins/font/css/font-awesome.css">
+
+
+    <link href="/css/plugins/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css" rel="stylesheet">
+    <!--<link href="/css/plugins/iCheck/custom.css" rel="stylesheet">-->
+
+
+    <link href="/css/plugins/chosen/chosen.css" rel="stylesheet">
+    <style type="text/css">
+        .draft, .publish, .trash, .checking {
+            list-style: none;
+            float: left;
+            margin: 0;
+            padding-bottom: 10px;
+        }
+
+        .blackcolor {
+            color: #000;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div id="wrapper">
+    <nav class="navbar-default navbar-static-side" role="navigation" th:replace="admin/_fragments :: menu(3, 2)"></nav>
+
+    <div id="page-wrapper" class="gray-bg">
+        <div class="row border-bottom" th:replace="admin/_fragments :: border-bottom"></div>
+        <div class="row wrapper border-bottom white-bg page-heading">
+            <div class="col-lg-10">
+                <h2>页面管理</h2>
+                <ol class="breadcrumb">
+                    <li>
+                        <a href="index.html" th:href="@{/admin}" th:text="首页">Home</a>
+                    </li>
+                    <li>
+                        <a>页面</a>
+                    </li>
+                    <li class="active">
+                        <strong>页面更新</strong>
+                    </li>
+                </ol>
+            </div>
+            <div class="col-lg-2">
+            </div>
+        </div>
+        <div class="wrapper wrapper-content  animated fadeInRight">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="row" id="msgdiv">
+                        <div class="col-lg-12">
+                            <div class="alert alert-info alert-dismissible fade in" role="alert" th:unless="${#strings.isEmpty(msg)}" >
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                <strong th:text="${msg}">更新成功</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>页面编辑 </h5>
+                        </div>
+                        <div class="ibox-content">
+                            <form method="post" th:object="${page}" th:action="@{/admin/pages}" id="page-form" class="form-horizontal">
+                                <input type="hidden" name="id" id="pageId" th:value="${page.id == null?'0':page.id}">
+                                <!-- 文章来源 标题 -->
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <div style="padding: 0;"><input type="text" class="form-control" name="title" placeholder="标题" th:value="*{title}" ></div>
+                                    </div>
+                                </div>
+                                <div class="form-group" style="padding: 0 15px">
+                                    <label class="sr-only" for="exampleInputAmount">固定链接:</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">/p/</div>
+                                        <input type="text" class="form-control" id="exampleInputAmount" name="url" th:value="*{url}" placeholder="请补全固定链接" onblur="checkPageUrl()" >
+                                        <div class="input-group-addon">/</div>
+                                    </div>
+                                </div>
+                                <!-- 文本编辑器 -->
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <div id="md-content" style="z-index: 1 !important;">
+                                            <textarea placeholder="博客内容" name="content"
+                                                      style="display: none"  th:text="*{content}" required></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 推荐、转载声明、赞赏、评论 -->
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <fieldset>
+                                            <div class="checkbox checkbox-inline">
+                                                <input type="checkbox" id="commentabled" name="commentabled" th:value="true" th:checked="*{commentabled}">
+                                                <label for="commentabled">评论</label>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                </div>
+                                <!-- 返回、保存、提交 -->
+                                <div class="form-group">
+                                    <div class="col-sm-12" style="text-align: right">
+                                            <button class="btn" type="submit" onclick="window.history.go(-1)"><strong>返回</strong></button>
+                                            <button class="btn btn-primary" type="submit"><strong>发布</strong></button>
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer" th:replace="admin/_fragments :: footer"></div>
+
+    </div>
+</div>
+
+
+<!-- Mainly scripts -->
+<script src="/js/jquery-2.1.1.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+
+<!-- Custom and plugin javascript -->
+<script src="/js/inspinia.js"></script>
+<script src="/js/plugins/pace/pace.min.js"></script>
+
+<!-- Peity -->
+<script src="/js/plugins/peity/jquery.peity.min.js"></script>
+
+<!-- Peity demo data -->
+<script src="/js/demo/peity-demo.js"></script>
+
+<!-- editor -->
+<script src="/plugins/editor/editormd.min.js"></script>
+
+<!-- iCheck -->
+<script src="/js/plugins/iCheck/icheck.min.js"></script>
+<!-- Chosen -->
+<script src="/js/plugins/chosen/chosen.jquery.js"></script>
+
+<script>
+    //初始化Markdown编辑器
+    var contentEditor;
+    $(function () {
+        contentEditor = editormd("md-content", {
+            width: "100%",
+            height: 640,
+            syncScrolling: "single",
+            path: "/plugins/editor/lib/",
+            saveHTMLToTextarea: true,
+
+            imageUpload: true,
+            imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+            imageUploadURL: "[[@{/admin/attachments/upload}]]",
+
+            emoji: true,//emoji表情，默认关闭
+            taskList: true,
+        });
+    });
+
+    // 显示提示信息
+    function show_validate_msg(ele, msg){
+        $("#msgdiv").html("");
+        var str = '<div class="col-lg-12"><div class="alert alert-dismissible fade in" role="alert">' +
+            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+            '<strong>' + msg + '</strong></div></div>';
+        $("#msgdiv").append(str);
+        if(ele == "error"){
+            $("[role=alert]").addClass("alert-danger");
+        }else{
+            $("[role=alert]").addClass("alert-info");
+        }
+    }
+
+    // 检查页面标题
+    function checkTitle() {
+        var title = $("[name=title]").val();
+        if(title == ""){
+            show_validate_msg("error", "页面标题不能为空");
+            return false;
+        }
+        return true;
+    }
+
+    // 检查输入路径
+    function checkPageUrl() {
+        var pageUrl = $("[name=url]").val();
+        var pageId = $("#pageId").val();
+        if(pageUrl == ""){
+            show_validate_msg("error", "页面路径不能为空");
+            return false;
+        }
+        var flag = true;
+        $.ajax({
+            url: "[[@{/admin/pages/checkUrl}]]?postUrl=" + pageUrl + "&pageId=" + pageId,
+            type: "GET",
+            async:false,
+            success: function (result) {
+                if(result.code==200){
+                    show_validate_msg("error", result.extend.msg);
+                    $("[name=url]").val("")
+                    flag = false;
+                }
+            }
+        });
+        if(flag == true){
+            $("#msgdiv").html("");
+        }
+        return flag;
+    }
+
+
+    // 表单提交
+    $("#page-form").submit(function (){
+        var flag = true;
+        if(!checkTitle() == true){
+            flag = false;
+        }
+        if(!checkPageUrl() == true){
+            flag = false;
+        }
+        return flag;
+    });
+
+</script>
+</body>
+
+</html>
