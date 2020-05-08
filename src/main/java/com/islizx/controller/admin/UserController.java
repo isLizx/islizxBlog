@@ -273,6 +273,7 @@ public class UserController {
         user.setId(loginUser.getId());
         user.setUpdateTime(new Date());
         user.setPassword(MyUtils.code(newps));
+        user.setType(loginUser.getType());
 
         userService.updateUser(user);
 
