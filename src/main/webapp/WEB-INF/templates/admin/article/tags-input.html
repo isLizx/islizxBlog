@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="cn" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+    <meta charset="utf-8">
+    <link type="image/x-icon" rel="shortcut icon" href="/images/islizx.jpg"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>isLizx | 标签</title>
+
+    <!--<link rel="stylesheet" href="https://www.jq22.com/jquery/bootstrap-3.3.4.css">
+    <link rel="stylesheet" href="https://www.jq22.com/jquery/font-awesome.4.6.0.css">-->
+    <link href="/css/plugins/toastr/toastr.min.css" rel="stylesheet">
+    <link href="/css/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="/css/animate.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="/plugins/font/css/font-awesome.css">
+
+</head>
+
+<body>
+
+<div id="wrapper">
+
+    <nav class="navbar-default navbar-static-side" role="navigation" th:replace="admin/_fragments :: menu(2, 4)"></nav>
+
+    <div id="page-wrapper" class="gray-bg">
+        <div class="row border-bottom" th:replace="admin/_fragments :: border-bottom"></div>
+        <div class="row wrapper border-bottom white-bg page-heading">
+            <div class="col-lg-10">
+                <h2>仪表盘</h2>
+                <ol class="breadcrumb">
+                    <li>
+                        <a href="index.html" th:href="@{/admin}" th:text="首页">Home</a>
+                    </li>
+                    <li class="active">
+                        <strong>仪表盘</strong>
+                    </li>
+                </ol>
+            </div>
+            <div class="col-lg-2">
+            </div>
+        </div>
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="row" id="msgdiv">
+                        <div class="col-lg-12">
+                            <div class="alert alert-info alert-dismissible fade in" role="alert" th:unless="${#strings.isEmpty(msg)}" >
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                <strong th:text="${msg}">更新成功</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" id="msgdiv-danger">
+                        <div class="col-lg-12">
+                        </div>
+                    </div>
+                    <div class="ibox">
+                        <div class="ibox-title">
+                            <h5 th:text="更新标签"></h5>
+                        </div>
+                        <div class="ibox-content">
+                                <form id="tag-from" method="post" th:object="${tag}" th:action="@{/admin/tags}" class="form-horizontal">
+                                    <input type="hidden" id="tagid" name="id" th:value="${tag.id == null?'0':tag.id}">
+                                    <!-- 名称 -->
+                                    <div class="form-group">
+                                        <div class="col-sm-12">
+                                            <div class="input-group m-b"><span class="input-group-btn">
+                                            <button type="button" class="btn btn-primary">名称</button> </span>
+                                                <input type="text" name="name" th:value="*{name}" class="form-control" placeholder="名称" onblur="checkTagName()" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- 描述 -->
+                                    <div class="form-group">
+                                        <div class="col-sm-12">
+                                            <div class="input-group m-b"><span class="input-group-btn">
+                                            <button type="button" class="btn btn-primary">描述</button> </span>
+                                                <input type="text" name="description" th:value="*{description}" class="form-control" placeholder="描述" >
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- 提交 -->
+                                    <div class="form-group">
+                                        <div class="col-sm-12" style="text-align: right">
+                                            <button class="btn btn-primary" type="submit"><strong>确定更新</strong></button>
+                                        </div>
+                                    </div>
+                                </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="ibox">
+                        <div class="ibox-title">
+                            <h5 th:text="所有标签"></h5>
+                        </div>
+                        <div class="ibox-content">
+                            <input type="hidden" name="pageIndex">
+                            <div id="table-container" th:fragment="tagList">
+                                <div class="table-responsive">
+                                    <table class="table table-hover issue-tracker">
+                                        <thead>
+                                        <tr>
+                                            <th>名称</th>
+                                            <th>文章数</th>
+                                            <th class="col-md-4">操作</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="tag : ${pageInfo.list}">
+                                            <td th:text="${tag.name}">
+
+                                            </td>
+                                            <td>
+                                                <span class="badge" th:text="${tag.blogCount}">3</span>
+                                            </td>
+                                            <td class="text-left">
+                                                <a class="btn btn-info btn-xs" th:href="@{/admin/tags/input/}+${tag.id}"> 编辑</a>
+                                                <a th:unless="${tag.blogCount != 0}" onclick="delTag(this)" th:attr="data-tagId=${tag.id}, data-tagName=${tag.name}" class="btn btn-danger btn-xs"> 丢弃</a>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="row">
+                                    <div class="row" style="text-align: center">
+                                        <nav th:replace="admin/_fragments :: paginaction"></nav>
+                                    </div>
+                                    <div class="row" style="line-height: 73px; text-align: center">
+                                        <span th:text="'当前第 ' + ${pageInfo.pageNum} + ' 页,总共 ' + ${pageInfo.pages} + ' 页,总记录数' + ${pageInfo.total}">共</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer" th:replace="admin/_fragments :: footer"></div>
+
+    </div>
+</div>
+
+
+<!-- Mainly scripts -->
+<script src="/js/jquery-2.1.1.js"></script>
+<script src="/js/bootstrap.js"></script>
+<script src="/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+
+<!-- Custom and plugin javascript -->
+<script src="/js/inspinia.js"></script>
+<script src="/js/plugins/pace/pace.min.js"></script>
+
+<!-- Sparkline -->
+<script src="/js/plugins/sparkline/jquery.sparkline.min.js"></script>
+
+<script type="text/javascript">
+
+
+        $("#sparkline1").sparkline([34, 43, 43, 35, 44, 32, 44, 48], {
+            type: 'line',
+            width: '100%',
+            height: '50',
+            lineColor: '#1ab394',
+            fillColor: "transparent"
+        });
+
+        //
+        function page(obj) {
+            $("[name='pageIndex']").val($(obj).data("page"));
+            loaddataByTag();
+            return false;
+        }
+
+        // 加载分类列表
+        function loaddataByTag() {
+            $("#table-container").load("[[@{/admin/tagsByJson}]]", {
+                pageIndex: $("[name='pageIndex']").val()
+            });
+        }
+
+        // 删除分类
+        function delTag(obj){
+            var delTagName = $(obj).data("tagname");
+            var delTagId = $(obj).data("tagid");
+
+            if(confirm("确认要丢弃:【" + delTagName + "】分类吗?")){
+                // 发送ajax请求删除
+                $.ajax({
+                    url:"[[@{/admin/tags/}]]" + delTagId,
+                    type:"DELETE",
+                    success:function (result) {
+                        var str = '<div class="col-lg-12"><div class="alert alert-info alert-dismissible fade in" role="alert">' +
+                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                            '<strong>' + result.extend.msg + '</strong></div></div>';
+                        $("#msgdiv").append(str);
+                        loaddataByTag();
+                    }
+                });
+            }
+        }
+
+        // 检查分类名是否可用
+        function checkTagName(){
+            var id = $("#tagid").val();
+            var tagname = $("[name='name']").val();
+            var flag = false;
+            $.ajax({
+                url: "[[@{/admin/checkTagName}]]?id=" + id + "&tagname=" + tagname,
+                type: "GET",
+                async:false,
+                success: function(result){
+                    if(result.code == 200){
+                        var str = '<div class="col-lg-12"><div class="alert alert-danger alert-dismissible fade in" role="alert">' +
+                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                            '<strong>' + result.extend.msg + '</strong></div></div>';
+                        $("#msgdiv-danger").append(str);
+                        flag = false;
+                    }else{
+                        flag = true;
+                    }
+                }
+            });
+            return flag;
+        }
+
+        $("#tag-from").submit(function () {
+            var flog = checkTagName();
+            return flog;
+        });
+
+
+</script>
+
+</body>
+
+</html>

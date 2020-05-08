@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="cn" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+    <meta charset="utf-8">
+    <link type="image/x-icon" rel="shortcut icon" href="/images/islizx.jpg"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>isLizx | 附件管理</title>
+
+    <link href="/css/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="/css/plugins/toastr/toastr.min.css" rel="stylesheet">
+    <link href="/css/animate.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="/plugins/font/css/font-awesome.css">
+
+    <link href="/css/plugins/dropzone/basic.css" rel="stylesheet">
+    <link href="/css/plugins/dropzone/dropzone.css" rel="stylesheet">
+    <style type="text/css">
+        .div-thumbnail {
+            transition: all .5s ease-in-out;
+            padding: 10px;
+        }
+
+        .padding-seven {
+            padding-top: 7px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="wrapper">
+
+    <nav class="navbar-default navbar-static-side" role="navigation" th:replace="admin/_fragments :: menu(5, 1)"></nav>
+
+    <div id="page-wrapper" class="gray-bg">
+        <div class="row border-bottom" th:replace="admin/_fragments :: border-bottom"></div>
+        <div class="row wrapper border-bottom white-bg page-heading">
+            <div class="col-lg-10">
+                <h2>仪表盘</h2>
+                <ol class="breadcrumb">
+                    <li>
+                        <a href="index.html" th:href="@{/admin}" th:text="首页">Home</a>
+                    </li>
+                    <li class="active">
+                        <strong>仪表盘</strong>
+                    </li>
+                </ol>
+            </div>
+            <div class="col-lg-2">
+            </div>
+        </div>
+        <div class="wrapper wrapper-content  animated fadeInRight">
+            <input type="hidden" name="pageIndex">
+            <!-- 附件上传 -->
+            <div class="row" id="msgdiv">
+                <div class="col-lg-12">
+                    <div class="alert alert-info alert-dismissible fade in" role="alert"
+                         th:unless="${#strings.isEmpty(msg)}">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <strong th:text="${msg}">更新成功</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>附件上传</h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <span class="glyphicon glyphicon-open" aria-hidden="true"></span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <form id="my-awesome-dropzone" class="dropzone" th:action="@{/admin/attachments/upload}">
+                                <div class="dropzone-previews"></div>
+                                <button type="submit" class="btn btn-primary pull-right">Submit this form!</button>
+                            </form>
+                            <div>
+                                <div class="m text-right"><small>点击空白区域上传附件</small></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox">
+                        <div class="ibox-title">
+                            <h5>附件列表</h5>
+                        </div>
+                        <div id="table-container" th:fragment="attachmentList">
+                            <div class="ibox-content">
+                                <div class="row">
+                                    <div class="col-lg-2 col-md-3 col-sm-6 col-xs-6 div-thumbnail"
+                                         th:each="attachment :${pageInfo.list}" th:name="attachdiv"
+                                         th:attr="data-attachid=${attachment.id}">
+                                        <a class="thumbnail"><img th:src="${attachment.attachSmallPath}"
+                                                                  th:title="${attachment.attachName}"></a>
+                                    </div>
+
+                                </div>
+                                <div class="row">
+                                    <div class="row" style="text-align: center">
+                                        <nav th:replace="admin/_fragments :: paginaction"></nav>
+                                    </div>
+                                    <div class="row" style="line-height: 73px; text-align: center">
+                                        <span th:text="'当前第 ' + ${pageInfo.pageNum} + ' 页,总共 ' + ${pageInfo.pages} + ' 页,总记录数' + ${pageInfo.total}">共</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="footer" th:replace="admin/_fragments :: footer"></div>
+
+        <!-- 模态框  -->
+        <div class="modal fade bs-attachmentdetail-modal-lg" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">附件详情</h4>
+                    </div>
+                    <div class="modal-body row">
+                        <div class="col-lg-6 attachImg">
+                            <img id="attachimg" style="width: 100%">
+                        </div>
+                        <div class="col-lg-6 attachDesc">
+                            <form class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">附件名:</label>
+                                    <div class="col-sm-9 padding-seven">
+                                        <span name="attachName"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">附件类型:</label>
+                                    <div class="col-sm-9 padding-seven">
+                                        <span name="attachType"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">附件路径:</label>
+                                    <div class="col-sm-9 padding-seven">
+                                        <span name="attachPath" style="word-break:normal;width:auto;display:block;white-space:pre-wrap;word-wrap : break-word ;overflow: hidden ;"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">上传时间:</label>
+                                    <div class="col-sm-9 padding-seven">
+                                        <span name="createTime"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">附件大小:</label>
+                                    <div class="col-sm-9 padding-seven">
+                                        <span name="attachSize"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">图片尺寸:</label>
+                                    <div class="col-sm-9 padding-seven">
+                                        <span name="attachWh"></span>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" id="attach-del-btn">永久删除</button>
+                    </div>
+                    <br>
+                    <br>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Mainly scripts -->
+<script src="/js/jquery-2.1.1.js"></script>
+<script src="/js/bootstrap.js"></script>
+<script src="/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+
+<!-- Custom and plugin javascript -->
+<script src="/js/inspinia.js"></script>
+<script src="/js/plugins/pace/pace.min.js"></script>
+
+<!-- Sparkline -->
+<script src="/js/plugins/sparkline/jquery.sparkline.min.js"></script>
+
+<!-- DROPZONE -->
+<script src="/js/plugins/dropzone/dropzone.js"></script>
+
+<script>
+    // 上下页
+    function page(obj) {
+        $("[name='pageIndex']").val($(obj).data("page"));
+        loaddataByAttachment();
+        return false;
+    }
+
+    // 局部刷新评论列表
+    function loaddataByAttachment() {
+        $("#table-container").load("[[@{/admin/attachmentsbyajax}]]", {
+            pageIndex: $("[name='pageIndex']").val()
+        });
+    }
+
+    $(document).ready(function () {
+
+
+        $("#sparkline1").sparkline([34, 43, 43, 35, 44, 32, 44, 48], {
+            type: 'line',
+            width: '100%',
+            height: '50',
+            lineColor: '#1ab394',
+            fillColor: "transparent"
+        });
+
+        $(document).ready(function () {
+
+            Dropzone.options.myAwesomeDropzone = {
+                paramName: "editormd-image-file",
+                autoProcessQueue: false,
+                parallelUploads: 100,
+                acceptedFiles: ".png,.jpg,.gif,.bmp,.jpeg",
+                maxFiles: 100,
+
+                // Dropzone settings
+                init: function () {
+                    var myDropzone = this;
+
+                    this.element.querySelector("button[type=submit]").addEventListener("click", function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        myDropzone.processQueue();
+                    });
+                    this.on("sendingmultiple", function () {
+                    });
+                    this.on("successmultiple", function (files, response) {
+                    });
+                    this.on("errormultiple", function (files, response) {
+                    });
+                }
+
+            }
+
+        });
+
+        $(document).on("click","#attach-del-btn",function(){
+            var id = $(this).data("attachid");
+            if (confirm("确定删除该附件?")) {
+                window.location.href = "[[@{/admin/attachments/delete}]]" + "?id=" + id;
+            }
+        });
+
+        $(document).on("click","[name=attachdiv]",function(){
+            var id = $(this).data("attachid");
+            $.ajax({
+                async: false,//同步，待请求完毕后再执行后面的代码
+                url: "[[@{/admin/attachments/detail}]]",
+                type: "GET",
+                contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                dataType: "json",
+                data: {"id": id},
+                success: function (data) {
+                    var attachment = data.extend.attachment;
+                    $("[name=attachName]").html(attachment.attachName);
+                    $("[name=attachType]").html(attachment.attachType);
+                    $("[name=attachPath]").html(attachment.attachPath);
+                    $("[name=createTime]").html(new Date(parseInt(attachment.createTime)).toLocaleString());
+                    $("[name=attachSize]").html(attachment.attachSize);
+                    $("[name=attachWh]").html(attachment.attachWh);
+
+                    $('#attachimg').attr("src", attachment.attachPath);
+                    $('#attachimg').attr("title", attachment.attachName);
+
+                    $('#attach-del-btn').attr("data-attachid", attachment.id);
+
+                    $('.bs-attachmentdetail-modal-lg').modal('show');
+                },
+                error: function () {
+                }
+            });
+        });
+
+
+    });
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="cn" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+    <meta charset="utf-8">
+    <link type="image/x-icon" rel="shortcut icon" href="/images/islizx.jpg"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>isLizx | 个人信息</title>
+
+    <!--<link rel="stylesheet" href="https://www.jq22.com/jquery/bootstrap-3.3.4.css">
+    <link rel="stylesheet" href="https://www.jq22.com/jquery/font-awesome.4.6.0.css">-->
+    <link href="/css/plugins/toastr/toastr.min.css" rel="stylesheet">
+    <link href="/css/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="/css/animate.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="/plugins/font/css/font-awesome.css">
+
+</head>
+
+<body>
+
+<div id="wrapper">
+
+    <nav class="navbar-default navbar-static-side" role="navigation" th:replace="admin/_fragments :: menu(8, 3)"></nav>
+
+    <div id="page-wrapper" class="gray-bg">
+        <div class="row border-bottom" th:replace="admin/_fragments :: border-bottom"></div>
+        <div class="row wrapper border-bottom white-bg page-heading">
+            <div class="col-lg-10">
+                <h2>用户管理</h2>
+                <ol class="breadcrumb">
+                    <li>
+                        <a href="index.html" th:href="@{/admin}" th:text="首页">Home</a>
+                    </li>
+                    <li>
+                        <a th:text="用户管理">Home</a>
+                    </li>
+                    <li class="active">
+                        <strong>个人信息</strong>
+                    </li>
+                </ol>
+            </div>
+            <div class="col-lg-2">
+            </div>
+        </div>
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="col-lg-12">
+                <div class="row" id="msgdiv">
+                    <div class="col-lg-12">
+                        <div class="alert alert-info alert-dismissible fade in" role="alert" th:unless="${#strings.isEmpty(msg)}" >
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <strong th:text="${msg}">更新成功</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h5 th:text="个人资料"></h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="clients-list">
+                            <ul class="nav nav-tabs">
+                                <li class="active"><a data-toggle="tab" href="#profile"><i class="fa fa-user"></i> 基本资料</a>
+                                </li>
+                                <li class=""><a data-toggle="tab" href="#changeps"><i class="fa fa-briefcase"></i> 密码修改</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div id="profile" class="tab-pane active">
+                                    <div class="row" style="padding: 30px 20px">
+                                        <form class="form-horizontal" id="user-update-form" th:object="${user}">
+                                            <input type="hidden" name="id" th:value="${user.id == null?'0':user.id}">
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">当前角色:</label>
+                                                <div class="col-sm-5">
+                                                    <label class="col-sm-2 control-label" th:text="${user.type == 0?'普通用户':'管理员'}">Email</label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="username" class="col-sm-2 control-label">用户名:</label>
+                                                <div class="col-sm-5">
+                                                    <input type="text" class="form-control" id="username"
+                                                           placeholder="请输入用户名" name="username" th:value="*{username}" onblur="checkUserName()">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="nickname" class="col-sm-2 control-label">显示名称:</label>
+                                                <div class="col-sm-5">
+                                                    <input type="text" class="form-control" id="nickname"
+                                                           placeholder="请输入名称" name="nickname" th:value="*{nickname}" onblur="checkNickname()">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="email" class="col-sm-2 control-label">邮箱:</label>
+                                                <div class="col-sm-5">
+                                                    <input type="email" class="form-control" id="email"
+                                                           placeholder="请输入邮箱" name="email" th:value="*{email}" onblur="checkEmail()">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">头像:</label>
+                                                <div class="col-sm-5">
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" name="avatar" th:value="*{avatar}">
+                                                        <span class="input-group-btn"><button type="button" class="btn btn-primary">选择</button> </span></div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="description" class="col-sm-2 control-label">个人说明:</label>
+                                                <div class="col-sm-5">
+                                                    <textarea name="description" id="description" class="form-control" rows="3"  placeholder="请书写个人说明"  th:text="*{description}"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="url" class="col-sm-2 control-label">个人主页:</label>
+                                                <div class="col-sm-5">
+                                                    <input type="text" class="form-control" id="url"
+                                                           placeholder="请输入个人主页地址" name="url" th:value="*{url}">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="col-sm-offset-2 col-sm-5">
+                                                    <button type="submit" class="btn btn-primary">保存</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div id="changeps" class="tab-pane">
+                                    <div class="row" style="padding: 30px 20px">
+                                        <form class="form-horizontal" id="password-update-form" >
+                                            <div class="form-group">
+                                                <label for="oldps" class="col-sm-2 control-label">原密码:</label>
+                                                <div class="col-sm-5">
+                                                    <input type="password" class="form-control" id="oldps"
+                                                           placeholder="请输入原密码" name="oldps">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="newps" class="col-sm-2 control-label">新密码:</label>
+                                                <div class="col-sm-5">
+                                                    <input type="password" class="form-control" id="newps"
+                                                           placeholder="请输入新密码" name="newps">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="confirmps" class="col-sm-2 control-label">确认密码:</label>
+                                                <div class="col-sm-5">
+                                                    <input type="password" class="form-control" id="confirmps"
+                                                           placeholder="请再次输入新密码">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="col-sm-offset-2 col-sm-5">
+                                                    <button type="submit" class="btn btn-primary">修改</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="clear: both"></div>
+        </div>
+        <div class="footer" th:replace="admin/_fragments :: footer"></div>
+
+    </div>
+</div>
+
+
+<!-- Mainly scripts -->
+<script src="/js/jquery-2.1.1.js"></script>
+<script src="/js/bootstrap.js"></script>
+<script src="/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+
+<!-- Custom and plugin javascript -->
+<script src="/js/inspinia.js"></script>
+<script src="/js/plugins/pace/pace.min.js"></script>
+
+<!-- Sparkline -->
+<script src="/js/plugins/sparkline/jquery.sparkline.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+
+
+        $("#sparkline1").sparkline([34, 43, 43, 35, 44, 32, 44, 48], {
+            type: 'line',
+            width: '100%',
+            height: '50',
+            lineColor: '#1ab394',
+            fillColor: "transparent"
+        });
+
+
+    });
+
+    // 检验用户名是否已存在
+    function checkUserName(){
+        var username = $("#username").val();
+        var id = $("[name=id]").val();
+        if(username == ""){
+            show_validate_msg("error", "请输入用户名");
+            return false;
+        }
+        var flag = false;
+        $.ajax({
+            url: "[[@{/admin/users/checkUserName}]]",
+            data:{'username':username, 'id':id},
+            type: "POST",
+            async:false,
+            success: function (result) {
+                if(result.code == 200){
+                    show_validate_msg("error", "用户名已存在");
+                    flag = false;
+                }else{
+                    flag = true;
+                }
+            }
+        });
+        if(flag == true){
+            $("#msgdiv").html("");
+        }
+        return flag;
+    }
+
+    // 检验邮箱是否已存在
+    function checkEmail(){
+        var email = $("#email").val();
+        var id = $("[name=id]").val();
+        // 邮箱正则表达式
+        var emailreg = /^([\.a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/;
+        if(email == ""){
+            show_validate_msg("error", "请输入邮箱");
+            return false;
+        }else if(!emailreg.test(email)){
+            show_validate_msg("error", "邮箱格式不正确");
+            return false;
+        }
+        var flag = false;
+        $.ajax({
+            url: "[[@{/admin/users/checkUserEmail}]]",
+            data:{'email':email, 'id':id},
+            type: "POST",
+            async:false,
+            success: function (result) {
+                if(result.code == 200){
+                    show_validate_msg("error", "邮箱已存在");
+                    flag = false;
+                }else{
+                    flag = true;
+                }
+            }
+        });
+        if(flag == true){
+            $("#msgdiv").html("");
+        }
+        return flag;
+    }
+
+    // 检验昵称
+    function checkNickname(){
+        var nickname = $("[name=nickname]").val();
+        if(nickname == ""){
+            show_validate_msg("error", "请输入显示名称");
+            return false;
+        }
+        $("#msgdiv").html("");
+        return true;
+    }
+
+    $("#user-update-form").submit(function () {
+        var flag = true;
+        if(!checkUserName() == true){
+            flag = false;
+        }
+        if(!checkEmail() == true){
+            flag = false;
+        }
+        if(!checkNickname() == true){
+            flag = false;
+        }
+        if(flag == true){
+            $.ajax({
+                url: "[[@{/admin/profile}]]",
+                data: $("#user-update-form").serialize(),
+                type: "PUT",
+                success: function(result){
+                    if(result.code == 200){
+                        show_validate_msg("error", result.extend.msg);
+                    }else{
+                        show_validate_msg("info", "信息修改成功");
+                    }
+                }
+            });
+        }
+        return false;
+    });
+
+    // 修改密码表单检验
+    function checkUpdatePassword(){
+        var oldps = $("#oldps").val();
+        var newps = $("#newps").val();
+        var confirmps = $("#confirmps").val();
+        if(oldps == ""){
+            show_validate_msg("error", "请输入原密码");
+            return false;
+        }else if(newps == ""){
+            show_validate_msg("error", "请输入新密码");
+            return false;
+        }else if(confirmps == ""){
+            show_validate_msg("error", "请再次输入新密码");
+            return false;
+        }else if(newps != confirmps){
+            show_validate_msg("error", "两次输入的密码不正确");
+            $("#confirmps").val("");
+            return false;
+        }
+        return true;
+    }
+
+    // 修改密码提交
+    $("#password-update-form").submit(function () {
+        var flag = true;
+        if(!checkUpdatePassword() == true){
+            flag = false;
+        }
+        if(flag == true){
+            $.ajax({
+                url: "[[@{/admin/security}]]",
+                data: $("#password-update-form").serialize(),
+                type: "PUT",
+                success: function(result){
+                    if(result.code == 200){
+                        show_validate_msg("error", result.extend.msg);
+                    }else{
+                        $("#oldps").val("");
+                        $("#newps").val("");
+                        $("#confirmps").val("");
+                        show_validate_msg("info", "密码修改成功");
+                    }
+                }
+            });
+        }
+        return false;
+    });
+
+    function show_validate_msg(ele, msg){
+        var str = '<div class="col-lg-12"><div class="alert alert-dismissible fade in" role="alert">' +
+            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+            '<strong>' + msg + '</strong></div></div>';
+        $("#msgdiv").append(str);
+        if(ele == "error"){
+            $("[role=alert]").addClass("alert-danger");
+        }else{
+            $("[role=alert]").addClass("alert-info");
+        }
+    }
+</script>
+
+</body>
+
+</html>

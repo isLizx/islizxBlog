@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="cn" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link type="image/x-icon" rel="shortcut icon" href="/images/islizx.jpg"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>激活失败</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
+    <link rel="stylesheet" href="/css/login.css">
+</head>
+<body>
+
+<br>
+<br>
+<br>
+<div class="m-container-small m-padded-tb-massive" style="max-width: 30em !important;">
+    <div class="ur container">
+        <div class="ui middle aligned center aligned grid">
+            <div class="column">
+                <h2 class="ui teal image header">
+                    <div class="content">
+                        账户激活失败！
+                    </div>
+                </h2>
+                <form class="ui large form">
+                    <div class="ui success message" id="error-message">
+                        <a th:href="@{/}"><span id="time">5</span>秒后系统会自动跳转到博客首页，请重新注册或联系管理员，也可点击本处直接跳转</a>
+                        <script type="text/javascript">
+                            $(document).ready(function(){
+                                delayURL("[[@{/}]]");
+                            })
+
+                            function delayURL(url) {
+                                var delay = document.getElementById("time").innerHTML;
+                                if (delay > 0) {
+                                    delay--;
+                                    document.getElementById("time").innerHTML = delay
+                                } else {
+                                    window.top.location.href = url
+                                }
+                                setTimeout("delayURL('" + url + "')", 1000)
+                            }
+                        </script>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+
+</body>
+</html>

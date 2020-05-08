@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="cn" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+    <meta charset="utf-8">
+    <link type="image/x-icon" rel="shortcut icon" href="/images/islizx.jpg"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>isLizx | 友链</title>
+
+    <!--<link rel="stylesheet" href="https://www.jq22.com/jquery/bootstrap-3.3.4.css">
+    <link rel="stylesheet" href="https://www.jq22.com/jquery/font-awesome.4.6.0.css">-->
+    <link href="/css/plugins/toastr/toastr.min.css" rel="stylesheet">
+    <link href="/css/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="/css/animate.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="/plugins/font/css/font-awesome.css">
+
+</head>
+
+<body>
+
+<div id="wrapper">
+
+    <nav class="navbar-default navbar-static-side" role="navigation" th:replace="admin/_fragments :: menu(7, 4)"></nav>
+
+    <div id="page-wrapper" class="gray-bg">
+        <div class="row border-bottom" th:replace="admin/_fragments :: border-bottom"></div>
+        <div class="row wrapper border-bottom white-bg page-heading">
+            <div class="col-lg-10">
+                <h2>友链</h2>
+                <ol class="breadcrumb">
+                    <li>
+                        <a href="index.html" th:href="@{/admin}" th:text="首页">Home</a>
+                    </li>
+                    <li>
+                        <a th:text="外观">Home</a>
+                    </li>
+                    <li class="active">
+                        <strong>友链</strong>
+                    </li>
+                </ol>
+            </div>
+            <div class="col-lg-2">
+            </div>
+        </div>
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="row" id="msgdiv">
+                        <div class="col-lg-12">
+                            <div class="alert alert-info alert-dismissible fade in" role="alert" th:unless="${#strings.isEmpty(msg)}" >
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                <strong th:text="${msg}">更新成功</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" id="msgdiv-danger">
+                        <div class="col-lg-12">
+                        </div>
+                    </div>
+                    <div class="ibox">
+                        <div class="ibox-title">
+                            <h5 th:text="更新友链"></h5>
+                        </div>
+                        <div class="ibox-content">
+                                <form method="post" th:object="${link}" th:action="@{/admin/links/save}">
+                                    <input type="hidden" name="id" th:value="*{id}">
+                                    <!-- 友链名 -->
+                                    <div class="form-group">
+                                        <label>友链名</label>
+                                        <input type="text" class="form-control" name="linkName" th:value="*{linkName}" placeholder="请输入友链名" required>
+                                    </div>
+                                    <!-- 链接 -->
+                                    <div class="form-group">
+                                        <label>链接</label>
+                                        <input type="text" class="form-control" name="linkUrl" th:value="*{linkUrl}" placeholder="请输入链接" required>
+                                    </div>
+                                    <!-- 链接 -->
+                                    <div class="form-group">
+                                        <label>友链图</label>
+                                        <input type="text" class="form-control" name="linkPic" th:value="*{linkPic}" placeholder="请输入友链图链接" required>
+                                    </div>
+                                    <!-- 内容 -->
+                                    <div class="form-group">
+                                        <label>描述</label>
+                                        <textarea class="form-control" th:text="*{linkDesc}" id="widgetContent" rows="5" name="linkDesc" style="resize: none" required></textarea>
+                                    </div>
+                                    <!-- 提交 -->
+                                    <div class="form-group">
+                                        <div class="col-sm-12" style="text-align: right; padding: 0">
+                                            <button class="btn btn-primary" type="submit"><strong>确定更新</strong></button>
+                                        </div>
+                                        <div style="clear:both;"></div>
+                                    </div>
+                                </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="ibox">
+                        <div class="ibox-title">
+                            <h5 th:text="所有友链"></h5>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="clients-list">
+                                <ul class="nav nav-tabs">
+                                    <li class="active"><a data-toggle="tab" href="#side">友链列表</a>
+                                    </li>
+                                </ul>
+                                <div class="tab-content" id="table-container" th:fragment="linkList">
+                                    <div id="side" class="tab-pane active">
+                                        <div class="row" style="padding: 30px 20px">
+                                            <div>
+                                                <div class="table-responsive">
+                                                    <table class="table table-hover issue-tracker">
+                                                        <thead>
+                                                        <tr>
+                                                            <th>友链名</th>
+                                                            <th>链接</th>
+                                                            <th>友链图</th>
+                                                            <th>加入时间</th>
+                                                            <th class="col-md-4">操作</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        <tr th:each="link : ${linkList}">
+                                                            <td th:text="${link.linkName}"></td>
+                                                            <td>
+                                                                <a th:href="${link.linkUrl}" th:text="${link.linkUrl}"></a>
+                                                            </td>
+                                                            <td>
+                                                                <img style="width: 35px; height: 35px; border-radius: 50%" th:src="@{${link.linkPic}}"/>
+                                                            </td>
+                                                            <td th:text="${#dates.format(link.linkCreateTime,'yyyy-MM-dd HH:mm:ss')}">
+                                                            <td class="text-left">
+                                                                <a class="btn btn-info btn-xs" th:href="@{/admin/links/edit/}+${link.id}"> 编辑</a>
+                                                                <a onclick="delLink(this)" th:attr="data-linkid=${link.id}, data-linkname=${link.linkName}" class="btn btn-danger btn-xs"> 永久删除</a>
+                                                            </td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer" th:replace="admin/_fragments :: footer"></div>
+
+    </div>
+</div>
+
+
+<!-- Mainly scripts -->
+<script src="/js/jquery-2.1.1.js"></script>
+<script src="/js/bootstrap.js"></script>
+<script src="/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+
+<!-- Custom and plugin javascript -->
+<script src="/js/inspinia.js"></script>
+<script src="/js/plugins/pace/pace.min.js"></script>
+
+<!-- Sparkline -->
+<script src="/js/plugins/sparkline/jquery.sparkline.min.js"></script>
+
+<script type="text/javascript">
+
+
+        $("#sparkline1").sparkline([34, 43, 43, 35, 44, 32, 44, 48], {
+            type: 'line',
+            width: '100%',
+            height: '50',
+            lineColor: '#1ab394',
+            fillColor: "transparent"
+        });
+
+
+        // 加载工具列表
+        function loaddataByLink() {
+            $("#table-container").load("[[@{/admin/links/linkByJson}]]", {
+            });
+        }
+
+        // 删除工具
+        function delLink(obj){
+            var delLinkName = $(obj).data("linkname");
+            var delLinkId = $(obj).data("linkid");
+
+            if(confirm("确认要丢弃:【" + delLinkName + "】友链吗?")){
+                // 发送ajax请求删除
+                $.ajax({
+                    url:"[[@{/admin/links/delete}]]?id=" + delLinkId,
+                    type:"DELETE",
+                    success:function (result) {
+                        var str = '<div class="col-lg-12"><div class="alert alert-info alert-dismissible fade in" role="alert">' +
+                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                            '<strong>' + result.extend.msg + '</strong></div></div>';
+                        $("#msgdiv").append(str);
+                        loaddataByLink();
+                    }
+                });
+            }
+        }
+
+
+</script>
+
+</body>
+
+</html>

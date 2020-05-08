@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.islizx.mapper.UserMapper">
+    <resultMap id="BaseResultMap" type="com.islizx.entity.User">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="username" property="username" jdbcType="VARCHAR"/>
+        <result column="password" property="password" jdbcType="VARCHAR"/>
+        <result column="nickname" property="nickname" jdbcType="VARCHAR"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="url" property="url" jdbcType="VARCHAR"/>
+        <result column="avatar" property="avatar" jdbcType="VARCHAR"/>
+        <result column="last_login_ip" property="lastLoginIp" jdbcType="VARCHAR"/>
+        <result column="type" property="type" jdbcType="BIT" />
+        <result column="register_time" property="registerTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="last_login_time" property="lastLoginTime" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="BIT"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="tb">t_user</sql>
+
+    <sql id="Base_Column_List">
+    id, username, password, nickname, email, url, avatar,
+    last_login_ip, register_time, update_time, last_login_time, status, type, description
+    </sql>
+
+    <select id="getUserById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from <include refid="tb"/>
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from
+        <include refid="tb"/>
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" parameterType="com.islizx.entity.User" useGeneratedKeys="true" keyProperty="id">
+        insert into
+        <include refid="tb"/>
+        (id, username, password,
+        nickname, email, url,
+        avatar, last_login_ip, register_time, update_time,
+        last_login_time, status, type, description)
+        values (#{id,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
+        #{nickname,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR},
+        #{avatar,jdbcType=VARCHAR}, #{lastLoginIp,jdbcType=VARCHAR}, #{registerTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
+        #{lastLoginTime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}, #{type,jdbcType=INTEGER}, #{description,jdbcType=VARCHAR})
+    </insert>
+
+    <update id="update" parameterType="com.islizx.entity.User">
+        update
+        <include refid="tb"/>
+        <set>
+            <if test="username != null">username = #{username,jdbcType=VARCHAR},</if>
+            <if test="password != null">password = #{password,jdbcType=VARCHAR},</if>
+            <if test="nickname != null">nickname = #{nickname,jdbcType=VARCHAR},</if>
+            <if test="email != null">email = #{email,jdbcType=VARCHAR},</if>
+            <if test="url != null">url = #{url,jdbcType=VARCHAR},</if>
+            <if test="avatar != null">avatar = #{avatar,jdbcType=VARCHAR},</if>
+            <if test="lastLoginIp != null">last_login_ip = #{lastLoginIp,jdbcType=VARCHAR},</if>
+            <if test="registerTime != null">register_time = #{registerTime,jdbcType=TIMESTAMP},</if>
+            <if test="updateTime != null">update_time = #{updateTime,jdbcType=TIMESTAMP},</if>
+            <if test="lastLoginTime != null">last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP},</if>
+            <if test="status != null">status = #{status,jdbcType=INTEGER},</if>
+            <if test="type != null">type = #{type,jdbcType=INTEGER},</if>
+            <if test="description != null">description = #{description,jdbcType=VARCHAR},</if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <!--用户列表查询-->
+    <select id="listUser" parameterType="com.islizx.entity.User"
+            resultType="com.islizx.entity.User">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+        ORDER BY `status` ASC
+    </select>
+
+    <!--根据用户名或邮箱获得用户-->
+    <select id="getUserByNameOrEmail" parameterType="String" resultType="com.islizx.entity.User">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+        <where>
+            username=#{value} OR email=#{value}
+        </where>
+        AND status>0
+        limit 1
+    </select>
+
+    <!--根据用户名查用户-->
+    <select id="getUserByName" parameterType="String" resultType="com.islizx.entity.User">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+        <where>
+            username=#{value}
+        </where>
+        limit 1
+    </select>
+
+    <!--根据Email查用户-->
+    <select id="getUserByEmail" parameterType="String" resultType="com.islizx.entity.User">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+        <where>
+            email=#{value}
+        </where>
+        limit 1
+    </select>
+</mapper>

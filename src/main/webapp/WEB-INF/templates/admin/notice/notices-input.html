@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="cn" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="utf-8">
+    <link type="image/x-icon" rel="shortcut icon" href="/images/islizx.jpg"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>isLizx | 编辑公告</title>
+    <link href="/css/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <!-- Toastr style -->
+    <link href="/css/plugins/toastr/toastr.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="/plugins/editor/css/editormd.css">
+
+
+    <link href="/css/animate.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="/plugins/font/css/font-awesome.css">
+
+
+    <link href="/css/plugins/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css" rel="stylesheet">
+    <!--<link href="/css/plugins/iCheck/custom.css" rel="stylesheet">-->
+
+
+    <link href="/css/plugins/chosen/chosen.css" rel="stylesheet">
+    <style type="text/css">
+        .draft, .publish, .trash, .checking {
+            list-style: none;
+            float: left;
+            margin: 0;
+            padding-bottom: 10px;
+        }
+
+        .blackcolor {
+            color: #000;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div id="wrapper">
+    <nav class="navbar-default navbar-static-side" role="navigation" th:replace="admin/_fragments :: menu(4, 2)"></nav>
+
+    <div id="page-wrapper" class="gray-bg">
+        <div class="row border-bottom" th:replace="admin/_fragments :: border-bottom"></div>
+        <div class="row wrapper border-bottom white-bg page-heading">
+            <div class="col-lg-10">
+                <h2>公告管理</h2>
+                <ol class="breadcrumb">
+                    <li>
+                        <a href="index.html" th:href="@{/admin}" th:text="首页">Home</a>
+                    </li>
+                    <li>
+                        <a>公告</a>
+                    </li>
+                    <li class="active">
+                        <strong>公告更新</strong>
+                    </li>
+                </ol>
+            </div>
+            <div class="col-lg-2">
+            </div>
+        </div>
+        <div class="wrapper wrapper-content  animated fadeInRight">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>公告编辑 </h5>
+                        </div>
+                        <div class="ibox-content">
+                            <form method="post" th:object="${notice}" th:action="@{/admin/notices}" class="form-horizontal">
+                                <input type="hidden" name="published" th:value="*{published}">
+                                <input type="hidden" name="id" th:value="*{id}">
+                                <!-- 文章来源 标题 -->
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <div style="padding: 0;"><input type="text" class="form-control" name="title" placeholder="标题" th:value="*{title}" required></div>
+                                    </div>
+                                </div>
+                                <!-- 文本编辑器 -->
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <div id="md-content" style="z-index: 1 !important;">
+                                            <textarea placeholder="博客内容" name="content"
+                                                      style="display: none"  th:text="*{content}" required></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 推荐、转载声明、赞赏、评论 -->
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <fieldset>
+                                            <div class="checkbox checkbox-inline">
+                                                <input type="checkbox" id="commentabled" name="commentabled" th:value="true" th:checked="*{commentabled}">
+                                                <label for="commentabled">评论</label>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                </div>
+                                <!-- 返回、保存、提交 -->
+                                <div class="form-group">
+                                    <div class="col-sm-12" style="text-align: right">
+                                            <button class="btn" type="submit" onclick="window.history.go(-1)"><strong>返回</strong></button>
+                                            <button class="btn btn-info" id="save-btn" type="submit"><strong>保存</strong></button>
+                                            <button class="btn btn-primary" id="publish-btn" type="submit"><strong>发布</strong></button>
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer" th:replace="admin/_fragments :: footer"></div>
+
+    </div>
+</div>
+
+
+<!-- Mainly scripts -->
+<script src="/js/jquery-2.1.1.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+
+<!-- Custom and plugin javascript -->
+<script src="/js/inspinia.js"></script>
+<script src="/js/plugins/pace/pace.min.js"></script>
+
+<!-- Peity -->
+<script src="/js/plugins/peity/jquery.peity.min.js"></script>
+
+<!-- Peity demo data -->
+<script src="/js/demo/peity-demo.js"></script>
+
+<!-- editor -->
+<script src="/plugins/editor/editormd.min.js"></script>
+
+<!-- iCheck -->
+<script src="/js/plugins/iCheck/icheck.min.js"></script>
+<!-- Chosen -->
+<script src="/js/plugins/chosen/chosen.jquery.js"></script>
+
+<script>
+    //初始化Markdown编辑器
+    var contentEditor;
+    $(function () {
+        contentEditor = editormd("md-content", {
+            width: "100%",
+            height: 640,
+            syncScrolling: "single",
+            path: "/plugins/editor/lib/",
+            saveHTMLToTextarea: true,
+
+            imageUpload: true,
+            imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+            imageUploadURL: "[[@{/admin/attachments/upload}]]",
+
+            emoji: true,//emoji表情，默认关闭
+            taskList: true,
+        });
+    });
+
+
+    $('#save-btn').click(function () {
+        $('[name="published"]').val(1);
+        $('#blog-form').submit();
+    });
+
+
+    $('#publish-btn').click(function () {
+        $('[name="published"]').val(0);
+        $('#blog-form').submit();
+    });
+</script>
+</body>
+
+</html>

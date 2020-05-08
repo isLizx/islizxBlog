@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="cn" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="home/_fragments :: head(~{::title})">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>isLizx</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
+    <link rel="stylesheet" href="../static/css/me.css">
+
+    <style type="text/css">
+        .blogger-head-pic {
+            border: 5px solid rgba(255, 255, 255, .5);
+            height: 110px;
+            width: 110px;
+        }
+
+        .rounded-circle {
+            border-radius: 50% !important;
+        }
+
+    </style>
+</head>
+<body>
+
+<!--导航-->
+<nav th:replace="home/_fragments :: menu(1)" class="ui inverted attached segment m-padded-tb-mini m-shadow-small"></nav>
+
+<!-- 代码 开始 -->
+<div class="ui m-container " style="padding-top: 13px">
+    <div class="container ui">
+    <ul class="line" style="font:14px Helvetica, sans-serif; font-weight:bold;">
+        <b id="notice_title">最新公告:</b>
+        <li style="margin-top: 0px; " th:each="notice : ${noticePageInfo.list}"><a th:href="@{'/notice/' + ${notice.id}}" th:text="${notice.title}" target="_blank">getElementsByTagName的简写方式</a>&nbsp;&nbsp;([[${#dates.format(notice.createTime,'yyyy-MM-dd')}]])</li>
+    </ul></div>
+</div>
+<!--中间内容-->
+<div class="m-container m-padded-tb-big animated fadeIn" style="padding-top: 1em !important;">
+    <div class="ui container">
+        <div class="ui stackable grid">
+            <!--左边博客列表-->
+            <div class="eleven wide column">
+                <!--header-->
+                <div class="ui top attached segment">
+                    <div class="ui middle aligned two column grid">
+                        <div class="column">
+                            <h3 class="ui teal header">文章</h3>
+                        </div>
+                        <div class="right aligned column">
+                            共 <h2 class="ui orange header m-inline-block m-text-thin" th:text="${pageInfo.total}">
+                            14 </h2> 篇
+                        </div>
+                    </div>
+                </div>
+                <!--content-->
+                <div class="ui attached  segment">
+                    <div class="ui vertical" style="padding-bottom: 20px">
+                        <div class="swiper-main">
+                            <div class="swiper-content"></div>
+                            <div class="swiper-point"></div>
+                            <div class="swiper-arrow arrow-left"><img th:src="@{img/swiper/arrow-left.png}" alt=""></div>
+                            <div class="swiper-arrow arrow-right"><img th:src="@{img/swiper/arrow-right.png}" alt=""></div>
+                        </div>
+                    </div>
+                    <div class="ui padded vertical segment m-padded-tb-large" th:each="blog : ${pageInfo.list}">
+                        <div class="ui middle aligned mobile reversed stackable grid">
+                            <div class="eleven wide column">
+                                <h3 class="ui header"><a href="#" th:href="@{/article/}+${blog.id} + '.html'" target="_blank"
+                                                         class="m-black" th:text="${blog.title}">你真的理解什么是财富自由吗?</a></h3>
+                                <p class="m-text" th:text="|${blog.description}......|">
+                                    正确做好任何一件事情的前提是清晰、正确的理解目标。而事实是，我们很多人很多时候根本没有对目标正确的定义，甚至根本从来就没有想过，只是大家都那么做而已…...</p>
+                                <div class="ui grid">
+                                    <div class="eleven wide column">
+                                        <div class="ui mini horizontal link list">
+                                            <div class="item" th:if="${blog.user != null}">
+                                                <img src="https://unsplash.it/100/100?image=1005"
+                                                     th:src="@{${blog.user.avatar}}" alt="" class="ui avatar image">
+                                                <div class="content"><a href="#" th:href="@{/about}" class="header"
+                                                                        th:text="${blog.user.nickname}"></a></div>
+                                            </div>
+                                            <div class="item">
+                                                <i class="calendar icon"></i><span
+                                                    th:text="${#dates.format(blog.updateTime,'yyyy-MM-dd')}">2017-10-01</span>
+                                            </div>
+                                            <div class="item">
+                                                <i class="eye icon"></i> <span th:text="${blog.views}">2342</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="right aligned five wide column">
+                                        <a href="#" th:if="${blog.type != null}" th:href="@{'/category/' + ${blog.type.id} + '/page/1'}" target="_blank"
+                                           class="ui teal basic label m-padded-tiny m-text-thin"
+                                            th:text="${blog.type.name}">认知升级</a>
+                                        <a href="#" th:if="${blog.type == null}" target="_blank"
+                                           class="ui teal basic label m-padded-tiny m-text-thin" >未分类</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="five wide column">
+                                <a href="#" th:href="@{/article/}+${blog.id} + '.html'" target="_blank">
+                                    <img src="https://unsplash.it/800/450?image=1005" th:src="@{${blog.firstPicture}}"
+                                         alt="" class="ui rounded image" style="width: 100%">
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!--footer-->
+                <div class="ui bottom attached segment">
+                    <div class="ui middle aligned center two column grid " style="padding-top: 30px">
+                        <div class="row">
+                            <div style="margin: 0 auto" class="ui mini borderless pagination menu"
+                                 th:if="${pageInfo.pages}>1">
+                                <a class="item" th:classappend="${pageInfo.isFirstPage?'disabled':''}"
+                                   th:href="@{/page/} + ${pageInfo.prePage}" ><i
+                                        class="left arrow icon"></i></a>
+                                <a class="item" th:each="num : ${pageInfo.navigatepageNums}"
+                                   th:classappend="${pageInfo.pageNum == num?'active':''}" th:text="${num}"
+                                   th:href="@{/page/} + ${num}">1</a>
+                                <a class="item" th:classappend="${pageInfo.isLastPage?'disabled':''}"
+                                   th:href="@{/page/} + ${pageInfo.nextPage}" ><i
+                                        class="icon right arrow"></i></a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <span style="margin: 0 auto"
+                                  th:text="'当前第 ' + ${pageInfo.pageNum} + ' 页,总共 ' + ${pageInfo.pages} + ' 页,总记录数' + ${pageInfo.total}">共</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!--右边的top-->
+            <div class="five wide column">
+                <!--天气-->
+                <div class="ui segments" style="height: 190px;background-color: #ffffff"><iframe
+                        src="//www.seniverse.com/weather/weather.aspx?uid=UA8CFD0221&cid=CHBJ000000&l=zh-CHS&p=SMART&a=1&u=C&s=1&m=0&x=1&d=5&fc=&bgc=&bc=&ti=0&in=0&li="
+                        frameborder="0" scrolling="no" width="100%" height="100%"
+                        allowTransparency="true"></iframe></div>
+
+
+                <!--登录-->
+                <!--<div class="ui segments m-margin-top-large">
+                    <div class="ui secondary segment " id="welcome-user" style="font-size: 30px;text-align: center;color: #00B5AD;font-weight: 600"></div>
+                    <div class="ui segment" style="padding: 33px 20px 11px 20px;text-align: center;font-size: 20px;">
+                        <a href="#" id="user-login" style="color: rgba(0,0,0,.4);">点击我进行登录</a>
+                    </div>
+                    <div class="ui segment" style="padding: 11px 20px;text-align: center">
+                        <span style="color: rgba(0,0,0,.4);">建站初期·技术生疏·若有不妥·欢迎指正</span>
+                    </div>
+                </div>-->
+
+                <!--关于-->
+                <div class="ui card segments" style="position: relative;width: 100%">
+                    <div class="image" style="overflow: hidden;height: 300px">
+                        <img style="-moz-filter: blur(30px);-webkit-filter: blur(30px);filter: blur(30px);margin-left: -69px;margin-top: -57px;min-width: 150%;"
+                             th:src="@{/images/islizx.jpg}">
+                    </div>
+                    <div style="padding-top: 40px;position: absolute;top: 32px;width: 100%;z-index: 999;text-align: center">
+                        <a th:href="@{/about}"><img th:src="@{/images/islizx.jpg}"
+                                alt="RAYMOND" class="rounded-circle blogger-head-pic"
+                                style="border: 5px solid rgba(255,255,255,.5);height: 110px;width: 110px;border-radius: 50%!important;"></a>
+                        <div style="color: #ffffff">
+                            <h3>Raymond</h3>
+                            <p>let today = new Beginnings();</p>
+                        </div>
+                    </div>
+                    <div class="extra content" style="padding: 0;border: none">
+                        <a class="ui teal button" style="width: 100%" th:href="@{/about}">关于我</a>
+                    </div>
+                </div>
+
+                <!--网站概况-->
+                <div class="ui segments m-margin-top-large">
+                    <div class="ui secondary segment ">
+                        <i class="desktop icon"></i>网站概况
+                    </div>
+                    <div class="ui segment" style="padding: 11px 20px">
+                        <span class="m-black m-text-thin"><i class="file outline mini icon"></i>文章总数: &nbsp;[[${allCount.blogCount}]]篇</span>
+                    </div>
+                    <div class="ui segment" style="padding: 11px 20px">
+                        <span class="m-black m-text-thin"><i class="comment outline mini icon"></i>评论总数: &nbsp;[[${allCount.commentCount}]]条</span>
+                    </div>
+                    <div class="ui segment" style="padding: 11px 20px">
+                        <span class="m-black m-text-thin"><i class="idea mini icon"></i>分类总数: &nbsp;[[${allCount.typeCount}]]条</span>
+                    </div>
+                    <div class="ui segment" style="padding: 11px 20px">
+                        <span class="m-black m-text-thin"><i class="tags mini icon"></i>标签总数: &nbsp;[[${allCount.tagCount}]]条</span>
+                    </div>
+                    <div class="ui segment" style="padding: 11px 20px">
+                        <span class="m-black m-text-thin"><i class="unhide mini icon"></i>浏览总数: &nbsp;[[${allCount.viewCount}]]次</span>
+                    </div>
+                    <div class="ui segment" style="padding: 11px 20px" id="htmer_time"></div>
+                    <div class="ui segment" style="padding: 11px 20px">
+                        <span style="color: rgba(0,0,0,.4);">数据非实时统计...</span>
+                    </div>
+                </div>
+
+
+                <!--分类-->
+                <div class="ui segments">
+                    <div class="ui secondary segment">
+                        <div class="ui two column grid">
+                            <div class="column">
+                                <i class="idea icon"></i>分类
+                            </div>
+                            <div class="right aligned column">
+                                <a href="#" th:href="@{/category}" target="_blank">more <i
+                                        class="angle double right icon"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui teal segment">
+                        <div class="ui fluid vertical menu">
+                            <a href="#" th:each="type : ${types}" th:unless="${type.blogCount == 0}"
+                               th:href="@{'/category/' + ${type.id} + '/page/1'}" target="_blank" class="item">
+                                <span th:text="${type.name}">学习日志</span>
+                                <div class="ui teal basic left pointing label" th:text="${type.blogCount}">13</div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!--标签-->
+                <div class="ui segments m-margin-top-large">
+                    <div class="ui secondary segment">
+                        <div class="ui two column grid">
+                            <div class="column">
+                                <i class="tags icon"></i>标签
+                            </div>
+                            <div class="right aligned column">
+                                <a href="#" th:href="@{/tag}" target="_blank">more <i
+                                        class="angle double right icon"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui teal segment">
+                        <a href="#" th:href="@{'/tag/' + ${tag.id} + '/page/1'}" th:unless="${tag.blogCount == 0}"
+                           target="_blank" class="ui teal basic left pointing label m-margin-tb-tiny"
+                           th:each="tag : ${tags}">
+                            <span th:text="${tag.name}">方法论</span>
+                            <div class="detail" th:text="${tag.blogCount}">23</div>
+                        </a>
+                    </div>
+                </div>
+
+                <!--热门文章-->
+                <!--热门文章-->
+                <div class="ui segments m-margin-top-large">
+                    <div class="ui secondary segment ">
+                        <i class="bookmark icon"></i>热门文章
+                    </div>
+                    <div class="ui segment" th:each="blog : ${blogViews}">
+                        <a href="#" th:href="@{/article/}+${blog.id} + '.html'" target="_blank" class="m-black m-text-thin"
+                           th:text="${blog.title}">用户故事（User Story）</a>
+                    </div>
+                </div>
+
+                <!--其他-->
+                <div class="ui segments m-margin-top-large " th:each="widget : ${postWidgets}" th:if="${widget.isDisplay == 1}">
+                    <div class="ui secondary segment " th:utext="${widget.widgetTitle}">
+                    </div>
+                    <div class="ui segment" th:utext="${widget.widgetContent}">
+                    </div>
+                </div>
+
+
+                <!--二维码-->
+                <h4 class="ui horizontal divider header m-margin-top-large">扫码关注我</h4>
+                <div class="ui centered card" style="width: 11em">
+                    <img src="https://pic.baike.soso.com/ugc/baikepic2/0/20160714140534-1853618233.jpg/800" alt=""
+                         class="ui rounded image">
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- 注册 -->
+<!--<div class="ui modal small" id="register-modal">
+    <i class="close icon"></i>
+    <div class="header">
+        登录
+    </div>
+    <div class="content">
+        <div class="ui error form segment">
+            <div class="ui error message" id="error-message">
+            </div>
+            <div class="field">
+                <label>昵称</label>
+                <input placeholder="昵称暂不支持修改" type="text" name="nickname">
+            </div>
+            <div class="field">
+                <label>邮箱地址</label>
+                <input type="email" name="email">
+            </div>
+            <div class="field">
+                <label>输入密码</label>
+                <input type="password" name="password">
+            </div>
+            <div class="field">
+                <label>确认密码</label>
+                <input type="password" name="confirm-password">
+            </div>
+        </div>
+    </div>
+    <div class="actions">
+        <div class="ui black button" id="regsiter_btn">
+            邮箱验证注册
+        </div>
+        <div class="ui positive right labeled icon button">
+           登录
+            <i class="checkmark icon"></i>
+        </div>
+    </div>
+</div>-->
+
+
+<br>
+<br>
+<!--底部footer-->
+<footer th:replace="home/_fragments :: footer" class="ui inverted vertical segment m-padded-tb-massive"></footer>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+<script th:src="@{/js/swiper.js}"></script>
+<script th:replace="home/_fragments :: header-footer-script(1)"></script>
+<script >
+    $(document).on("click","#user-login",function(){
+        $('#register-modal').modal('show');
+    });
+
+    function checknickname(){
+        var nickname = $("[name=nickname]").val();
+        if(nickname == ""){
+            $("#error-message").text("昵称不能为空!");
+            return false;
+        }else{
+            $("#error-message").text();
+            return true;
+        }
+    }
+
+    $(document).on("click","#regsiter_btn",function(){
+        if(!checknickname()){
+            return false;
+        }else if(!checkemail()){
+            return false;
+        }else if(!checkpassword()){
+            return false;
+        }else if(!checkconfirmpassword()){
+            return false;
+        }
+        var nickname = $("[name=nickname]").val();
+        var email = $("[name=email]").val();
+        var password = $("[name=password]").val();
+        $.ajax({
+            async:false,
+            url: "[[@{/register?email=}]]" + email + "&nickname=" + nickname + "&password=" + password,
+            type: "POST",
+            success:function (result) {
+                if(result.code == 200){
+                    $("#error-message").text(result.extend.msg);
+                }else{
+                    alert("注册成功!请查看邮箱点击激活链接即可使用");
+                }
+            }
+        });
+    });
+
+    function checkemail(){
+        var reg = new RegExp("^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$"); //正则表达式
+        var email = $("[name=email]").val();
+        if(email == ""){
+            $("#error-message").text("邮箱不能为空!");
+            return false;
+        } else if(!reg.test(email)){
+            $("#error-message").text("邮箱格式不正确!");
+            return false;
+        }
+        var flag = false;
+        $.ajax({
+            async:false,
+            url: "[[@{/checkUserEmail?email=}]]" + email,
+            type: "POST",
+            success:function (result) {
+                if(result.code == 200){
+                    $("#error-message").text("该邮箱已被注册!");
+                }else{
+                    flag = true;
+                }
+            }
+        });
+
+        return flag;
+    }
+
+    function checkpassword(){
+        var password = $("[name=password]").val();
+        if(password == ""){
+            $("#error-message").text("密码不能为空!");
+            return false;
+        }else{
+            $("#error-message").text();
+            return true;
+        }
+    }
+
+    function checkconfirmpassword(){
+        var confirmpassword = $("[name=confirm-password]").val();
+        var password = $("[name=password]").val();
+        if(confirmpassword == ""){
+            $("#error-message").text("确认密码不能为空!");
+            return false;
+        }else if(password != confirmpassword){
+            $("#error-message").text("两次输入的密码不一致!");
+            return false;
+        }else{
+            $("#error-message").text();
+            return true;
+        }
+    }
+
+
+
+
+
+    //判断上下午
+    $(function () {
+        now = new Date(),hour = now.getHours();
+        var st;
+        if(hour < 6){st = "凌晨好！"}
+        else if (hour < 9){st = "早上好！"}
+        else if (hour < 12){st = "上午好！"}
+        else if (hour < 14){st = "中午好！"}
+        else if (hour < 17){st = "下午好！"}
+        else if (hour < 19){st = "傍晚好！"}
+        else if (hour < 22){st = "晚上好！"}
+        else {st = "夜里好！"}
+        $("#welcome-user").text(st);
+    });
+
+
+
+    // 幻灯片设置
+    $(function(){
+        // 加载幻灯片
+        $.ajax({
+            url: "[[@{/getSlideListbyJson}]]",
+            type: "GET",
+            success: function (result) {
+                if(result.code == 100){
+                    var list = result.extend.slides;
+                    var slides = [];
+                    for(var i=0;i<list.length;i++){
+                        slides.push(list[i]);
+                    }
+                    /*for(var obj in result.extend.slides){
+                        console.log(obj.id);
+                       slides.push(obj);
+                    }
+                    for (var a ; a < slides.length; a++){
+                        console.log(a.id);
+                    }*/
+                    $(".swiper-main").stop(true,true);
+                    swiper.init($(".swiper-main"),
+                        slides,
+                        {
+                            // ismobile: false,//可选，不填则自动判断客户端，默认false - true / false(PC端/移动端)
+                            arrowtype: 'move',	//可选，默认一直显示 - 'move（移动端不支持）' / 'none'	(鼠标移上显示 / 不显示 )
+                            autoplay: true,	//可选，默认true - true / false (开启轮播/关闭轮播)
+                            cantouch: true,//可选，默认true - true / false (开启拖拽切换/关闭拖切换)
+                            showpoint: true,//可选，默认true - true / false (显示轮播点/关闭轮播点)
+                            time:5000	//可选，默认3000
+                        },function(item){
+                            $(".swiper-main").stop(true,true);
+                        },function(list){
+                            $(".swiper-main").stop(true,true);
+                        }
+                    )
+                }
+            }
+        });
+        // JavaScript Document
+        (function($){
+            $.fn.extend({
+                "slideUp":function(value){
+
+                    var docthis = this;
+                    //默认参数
+                    value=$.extend({
+                        "li_h":"30",
+                        "time":3000,
+                        "movetime":1000
+                    },value)
+
+                    //向上滑动动画
+                    function autoani(){
+                        $("li:first",docthis).stop(true, true);
+                        $("li:first",docthis).animate({"margin-top":-value.li_h},value.movetime,function(){
+                            $(this).css("margin-top",0).appendTo(".line");
+                        });
+                    }
+
+                    //自动间隔时间向上滑动
+                    var anifun = setInterval(autoani,value.time);
+
+                    //悬停时停止滑动，离开时继续执行
+                    $(docthis).children("li").hover(function(){
+                        clearInterval(anifun);			//清除自动滑动动画
+                    },function(){
+                        anifun = setInterval(autoani,value.time);	//继续执行动画
+                    })
+                }
+            })
+        })(jQuery);
+
+        // 天气
+        (function(a,h,g,f,e,d,c,b){b=function(){d=h.createElement(g);c=h.getElementsByTagName(g)[0];d.src=e;d.charset="utf-8";d.async=1;c.parentNode.insertBefore(d,c)};a["SeniverseWeatherWidgetObject"]=f;a[f]||(a[f]=function(){(a[f].q=a[f].q||[]).push(arguments)});a[f].l=+new Date();if(a.attachEvent){a.attachEvent("onload",b)}else{a.addEventListener("load",b,false)}}(window,document,"script","SeniverseWeatherWidget","//cdn.sencdn.com/widget2/static/js/bundle.js?t="+parseInt((new Date().getTime() / 100000000).toString(),10)));
+        window.SeniverseWeatherWidget('show', {
+            flavor: "slim",
+            location: "WX4FBXXFKE4F",
+            geolocation: true,
+            language: "auto",
+            unit: "c",
+            theme: "light",
+            token: "58d6e44e-9e1f-4ea1-8795-40e43a6af088",
+            hover: "always",
+            container: "tp-weather-widget"
+        });;
+    })
+
+    // 公告
+    $(function(){
+        $(".line").slideUp();
+    })
+
+    function secondToDate(second) {
+        if (!second) {
+            return 0;
+        }
+        var time = new Array(0, 0, 0, 0, 0);
+        if (second >= 365 * 24 * 3600) {
+            time[0] = parseInt(second / (365 * 24 * 3600));
+            second %= 365 * 24 * 3600;
+        }
+        if (second >= 24 * 3600) {
+            time[1] = parseInt(second / (24 * 3600));
+            second %= 24 * 3600;
+        }
+        if (second >= 3600) {
+            time[2] = parseInt(second / 3600);
+            second %= 3600;
+        }
+        if (second >= 60) {
+            time[3] = parseInt(second / 60);
+            second %= 60;
+        }
+        if (second > 0) {
+            time[4] = second;
+        }
+        return time;
+    }
+    function setTime() {
+        var create_time = Math.round(new Date(Date.UTC(2020, 01, 26, 0, 0, 0)).getTime() / 1000);
+        var timestamp = Math.round((new Date().getTime() + 8 * 60 * 60 * 1000) / 1000);
+        currentTime = secondToDate((timestamp - create_time));
+        currentTimeHtml = '<span class="m-black m-text-thin"><i class="wait mini icon"></i>运行时间: &nbsp;' + currentTime[1] + '天</span>';
+        document.getElementById("htmer_time").innerHTML = currentTimeHtml;
+    }    setInterval(setTime, 1000);
+
+</script>
+</body>
+</html>
