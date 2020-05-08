@@ -61,51 +61,52 @@ default-character-set=utf8
 
    2. 文章列表
 
-      ![](./img/blogs.png)
+      ![](https://islizx.oss-cn-hangzhou.aliyuncs.com/images/2020/5/20200508_153043_486.png)
 
    3. 编辑文章（MarkDown编辑器）
 
-      ![](./img/newblog.png)
+      ![](https://islizx.oss-cn-hangzhou.aliyuncs.com/images/2020/5/20200508_153149_326.png)
 
    4. 文章类型管理
 
-      ![](./img/types_input.png)
+      ![](https://islizx.oss-cn-hangzhou.aliyuncs.com/images/2020/5/20200508_153226_333.png)
 
    5. 页面管理（可以自定义页面，申请友链和留言板即为自定义页面）
 
-      ![](./img/pages.png)
+      ![](https://islizx.oss-cn-hangzhou.aliyuncs.com/images/2020/5/20200508_153303_554.png)
 
-      ![](./img/pages_input.png)
+      ![](https://islizx.oss-cn-hangzhou.aliyuncs.com/images/2020/5/20200508_153303_580.png)
 
    6. 公告管理
 
-      ![](./img/notices_input.png)
+      ![](https://islizx.oss-cn-hangzhou.aliyuncs.com/images/2020/5/20200508_153345_67.png)
 
    7. 附件管理（点击附件可以查看详细信息以及删除操作）
    
-      ![](./img/attachments.png)
+      ![](https://islizx.oss-cn-hangzhou.aliyuncs.com/images/2020/5/20200508_153429_108.png)
    
-      ![](./img/attachments_detail.png)
+      ![](https://islizx.oss-cn-hangzhou.aliyuncs.com/images/2020/5/20200508_153517_792.png)
    
    8. 评论管理（管理员回复回收站和待审核的评论后直接通过审核并发送邮件给评论者）
    
-      ![](./img/comments.png)
+      ![](https://islizx.oss-cn-hangzhou.aliyuncs.com/images/2020/5/20200508_153604_8.png)
    
    9. 轮播图管理(即首页的轮播图，轮播图可另外链接到其它页面，比如文章或公告)
    
-      ![](./img/slides.png)
+      ![](https://islizx.oss-cn-hangzhou.aliyuncs.com/images/2020/5/20200508_153633_214.png)
    
    10. 小工具管理（即首页右侧的bar）
    
-      ![](./img/widgets.png)
+      ![](https://islizx.oss-cn-hangzhou.aliyuncs.com/images/2020/5/20200508_153656_373.png)
    
    11. 友链管理
    
-      ![](./img/links.png)
+      ![](https://islizx.oss-cn-hangzhou.aliyuncs.com/images/2020/5/20200508_153720_571.png)
    
    12. 日志管理
    
-      ![](./img/log.png)
+      ![](
+https://islizx.oss-cn-hangzhou.aliyuncs.com/images/2020/5/20200508_153744_66.png)
 
 ## 五、下载地址
 
