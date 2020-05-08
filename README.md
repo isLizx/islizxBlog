@@ -57,7 +57,7 @@ default-character-set=utf8
 
    1. 后台首页 DashBoard
 
-      ![](.\img\dashboard.png)
+      ![](https://github.com/isLizx/islizxBlog/raw/master/dashboard.png)
 
    2. 文章列表
 
